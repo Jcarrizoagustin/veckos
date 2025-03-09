@@ -1,0 +1,416 @@
+/* src/app/features/inscripciones/inscripcion-form/inscripcion-form.component.css */
+.inscripcion-form-container {
+    padding: 20px;
+    min-height: calc(100vh - 120px);
+  }
+  
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+  }
+  
+  .loading-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #6C13F1;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 2s linear infinite;
+    margin-bottom: 16px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .inscripcion-form-content {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .form-header {
+    margin-bottom: 24px;
+  }
+  
+  .form-header h1 {
+    color: #6C13F1;
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+  }
+  
+  /* Contenedor de pasos */
+  .steps-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    position: relative;
+  }
+  
+  .step {
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .step-number {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #E0E0E0;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    margin-bottom: 8px;
+    transition: all 0.3s;
+  }
+  
+  .step.active .step-number {
+    background-color: #6C13F1;
+    color: white;
+  }
+  
+  .step.completed .step-number {
+    background-color: #6C13F1;
+    color: white;
+  }
+  
+  .step.completed .step-number::after {
+    content: "✓";
+  }
+  
+  .step-label {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .step.active .step-label {
+    color: #6C13F1;
+    font-weight: 500;
+  }
+  
+  .step-connector {
+    flex: 1;
+    height: 2px;
+    background-color: #E0E0E0;
+    margin: 0 10px;
+    margin-bottom: 32px;
+    transition: all 0.3s;
+    z-index: 0;
+  }
+  
+  .step-connector.active {
+    background-color: #6C13F1;
+  }
+  
+  .step-connector.last {
+    flex: 0.5;
+  }
+  
+  /* Contenido de los pasos */
+  .form-step-content {
+    margin-bottom: 30px;
+  }
+  
+  .form-step mat-card {
+    padding: 24px;
+  }
+  
+  mat-card-header {
+    margin-bottom: 24px;
+  }
+  
+  /* Usuario Form */
+  .usuario-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .buscar-usuario {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+  
+  .usuarios-list {
+    margin-top: 24px;
+  }
+  
+  .usuarios-list h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: #333;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  
+  .usuarios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+  }
+  
+  .usuario-card {
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  
+  .usuario-card:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .usuario-card.small {
+    margin-bottom: 0;
+  }
+  
+  .usuario-avatar {
+    background-color: #EDE7F6;
+    color: #6C13F1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .dni-label {
+    font-weight: 500;
+  }
+  
+  .usuario-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .dni-option {
+    color: #666;
+    font-size: 12px;
+  }
+  
+  /* Plan Form */
+  .plan-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .section-divider {
+    margin: 24px 0;
+  }
+  
+  .planes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+  }
+  
+  .plan-card {
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  
+  .plan-card:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .plan-card.selected {
+    border: 2px solid #6C13F1;
+    background-color: #F3E5F5;
+  }
+  
+  .plan-icon {
+    background-color: #EDE7F6;
+    color: #6C13F1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .frecuencia-options {
+    margin-top: 16px;
+  }
+  
+  .frecuencia-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .fecha-row {
+    display: flex;
+    gap: 16px;
+  }
+  
+  .fecha-row mat-form-field {
+    flex: 1;
+  }
+  
+  /* Turnos Form */
+  .turnos-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .dias-selection {
+    margin-bottom: 24px;
+  }
+  
+  .dia-chips {
+    margin-top: 16px;
+  }
+  
+  .turnos-seleccion {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .dia-turnos h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: #333;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  
+  .turnos-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  
+  .turno-card {
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .turno-card:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    background-color: #F3E5F5;
+  }
+  
+  .turno-hora {
+    font-size: 18px;
+    font-weight: 500;
+    color: #6C13F1;
+  }
+  
+  .turno-descripcion {
+    font-size: 14px;
+    color: #666;
+    margin-top: 4px;
+  }
+  
+  /* Pago Form */
+  .pago-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .registro-pago-toggle {
+    margin-bottom: 24px;
+  }
+  
+  .info-text {
+    margin-top: 8px;
+    color: #666;
+    font-size: 14px;
+  }
+  
+  .pago-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  
+  .pago-inputs .full-width {
+    grid-column: span 2;
+  }
+  
+  /* Confirmación */
+  .confirmacion-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  
+  .confirmacion-section {
+    margin-bottom: 24px;
+  }
+  
+  .confirmacion-section h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: #333;
+    font-size: 16px;
+    font-weight: 500;
+    border-bottom: 1px solid #E0E0E0;
+    padding-bottom: 8px;
+  }
+  
+  .confirmacion-data {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .confirmacion-row {
+    display: flex;
+  }
+  
+  .confirmacion-label {
+    min-width: 120px;
+    font-weight: 500;
+    color: #666;
+  }
+  
+  .confirmacion-value {
+    flex: 1;
+  }
+  
+  /* Botones de navegación */
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 24px;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .steps-container {
+      overflow-x: auto;
+      padding-bottom: 16px;
+    }
+    
+    .step-label {
+      font-size: 12px;
+    }
+    
+    .fecha-row {
+      flex-direction: column;
+      gap: 0;
+    }
+    
+    .pago-inputs {
+      grid-template-columns: 1fr;
+    }
+    
+    .pago-inputs .full-width {
+      grid-column: span 1;
+    }
+    
+    .confirmacion-content {
+      grid-template-columns: 1fr;
+    }
+  }

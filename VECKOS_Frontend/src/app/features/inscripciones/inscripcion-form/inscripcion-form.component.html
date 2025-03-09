@@ -1,0 +1,370 @@
+<!-- src/app/features/inscripciones/inscripcion-form/inscripcion-form.component.html -->
+<div class="inscripcion-form-container">
+    <div class="loading-container" *ngIf="isLoading">
+      <div class="loading-spinner"></div>
+      <p>Cargando datos...</p>
+    </div>
+    
+    <div class="inscripcion-form-content" *ngIf="!isLoading">
+      <!-- Cabecera del formulario -->
+      <div class="form-header">
+        <h1 *ngIf="!isEditMode && !isRenovacionMode">Nueva inscripción</h1>
+        <h1 *ngIf="isEditMode && !isRenovacionMode">Editar inscripción</h1>
+        <h1 *ngIf="isRenovacionMode">Renovar inscripción</h1>
+      </div>
+      
+      <!-- Pasos del formulario -->
+      <div class="steps-container">
+        <div class="step" *ngFor="let paso of pasosLabels; let i = index" 
+             [class.active]="pasoActual === i" 
+             [class.completed]="pasoActual > i"
+             (click)="irAPaso(i)">
+          <div class="step-number">{{i + 1}}</div>
+          <div class="step-label">{{paso}}</div>
+        </div>
+        <div class="step-connector" *ngFor="let paso of pasosLabels; let i = index" 
+             [class.active]="pasoActual > i" 
+             [class.last]="i === pasosLabels.length - 2"></div>
+      </div>
+      
+      <!-- Contenido del paso actual -->
+      <div class="form-step-content">
+        <!-- Paso 1: Selección de usuario -->
+        <div class="form-step" *ngIf="pasoActual === 0">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Seleccionar usuario</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <form [formGroup]="usuarioForm" class="usuario-form">
+                <div *ngIf="usuarioForm.get('usuarioId')?.value">
+                  <mat-card class="usuario-card">
+                    <mat-card-header>
+                      <div mat-card-avatar class="usuario-avatar"></div>
+                      <mat-card-title>{{usuarioForm.get('usuarioNombre')?.value}}</mat-card-title>
+                      <mat-card-subtitle>
+                        <span class="dni-label">DNI:</span> 
+                        {{getUsuarioDni()}}
+                      </mat-card-subtitle>
+                    </mat-card-header>
+                    <mat-card-actions>
+                      <button mat-button color="primary" (click)="usuarioForm.get('usuarioId')?.setValue(null)">
+                        <mat-icon>edit</mat-icon> Cambiar usuario
+                      </button>
+                    </mat-card-actions>
+                  </mat-card>
+                </div>
+                
+                <div *ngIf="!usuarioForm.get('usuarioId')?.value" class="buscar-usuario">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Buscar usuario</mat-label>
+                    <input type="text" matInput [formControl]="usuarioBusquedaControl"
+                           [matAutocomplete]="auto" placeholder="Nombre, apellido o DNI">
+                    <mat-icon matSuffix>search</mat-icon>
+                    <mat-autocomplete #auto="matAutocomplete">
+                      <mat-option *ngFor="let usuario of filteredUsuarios | async" 
+                                  [value]="usuario.nombre + ' ' + usuario.apellido"
+                                  (click)="onUsuarioSelected(usuario)">
+                        <div class="usuario-option">
+                          <span>{{usuario.nombre}} {{usuario.apellido}}</span>
+                          <span class="dni-option">{{usuario.dni}}</span>
+                        </div>
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+                  
+                <div class="usuarios-list">
+                    <h3>Usuarios recientes</h3>
+                    <div class="usuarios-grid">
+                      <mat-card class="usuario-card small" *ngFor="let usuario of usuarios.slice(0, 6)" 
+                                (click)="onUsuarioSelected(usuario)">
+                        <mat-card-header>
+                          <div mat-card-avatar class="usuario-avatar"></div>
+                          <mat-card-title>{{usuario.nombre}} {{usuario.apellido}}</mat-card-title>
+                          <mat-card-subtitle>DNI: {{usuario.dni}}</mat-card-subtitle>
+                        </mat-card-header>
+                      </mat-card>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </mat-card-content>
+          </mat-card>
+        </div>
+        
+        <!-- Paso 2: Selección de plan -->
+        <div class="form-step" *ngIf="pasoActual === 1">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Seleccionar plan</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <form [formGroup]="planForm" class="plan-form">
+                <div class="plan-selection">
+                  <h3>Plan de entrenamiento</h3>
+                  <div class="planes-grid">
+                    <mat-card class="plan-card" *ngFor="let plan of planes" 
+                              [class.selected]="planForm.get('planId')?.value === plan.id"
+                              (click)="planForm.get('planId')?.setValue(plan.id); pagoForm.get('monto')?.setValue(plan.precio)">
+                      <mat-card-header>
+                        <div mat-card-avatar class="plan-icon">
+                          <mat-icon>fitness_center</mat-icon>
+                        </div>
+                        <mat-card-title>{{plan.nombre}}</mat-card-title>
+                        <mat-card-subtitle>${{plan.precio}}</mat-card-subtitle>
+                      </mat-card-header>
+                      <mat-card-content>
+                        <p>{{plan.descripcion}}</p>
+                      </mat-card-content>
+                    </mat-card>
+                  </div>
+                </div>
+                
+                <mat-divider class="section-divider"></mat-divider>
+                
+                <div class="frecuencia-selection">
+                  <h3>Frecuencia semanal</h3>
+                  <div class="frecuencia-options">
+                    <mat-radio-group formControlName="frecuencia" class="frecuencia-group">
+                      <mat-radio-button *ngFor="let f of frecuencias" [value]="f.valor">
+                        {{f.etiqueta}}
+                      </mat-radio-button>
+                    </mat-radio-group>
+                  </div>
+                </div>
+                
+                <mat-divider class="section-divider"></mat-divider>
+                
+                <div class="fecha-selection">
+                  <h3>Fecha de inicio</h3>
+                  <div class="fecha-row">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Fecha de inicio</mat-label>
+                      <input matInput [matDatepicker]="pickerInicio" formControlName="fechaInicio">
+                      <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+                      <mat-datepicker #pickerInicio></mat-datepicker>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline">
+                      <mat-label>Fecha de fin</mat-label>
+                      <input matInput [matDatepicker]="pickerFin" formControlName="fechaFin">
+                      <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+                      <mat-datepicker #pickerFin></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </form>
+            </mat-card-content>
+          </mat-card>
+        </div>
+        
+        <!-- Paso 3: Selección de turnos -->
+        <div class="form-step" *ngIf="pasoActual === 2">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Seleccionar turnos</mat-card-title>
+              <mat-card-subtitle>
+                Selecciona {{planForm.get('frecuencia')?.value}} días de la semana para asistir
+              </mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <form [formGroup]="turnosForm" class="turnos-form">
+                <div class="dias-selection">
+                  <div class="dia-chips">
+                    <mat-chip-listbox>
+                      <mat-chip-option *ngFor="let dia of diasSemana" 
+                                     [selected]="isDiaSelected(dia.valor)"
+                                     (click)="toggleDiaSeleccion(dia.valor)"
+                                     [disabled]="!isDiaSelected(dia.valor) && turnosForm.get('diasSeleccionados')?.value.length >= planForm.get('frecuencia')?.value">
+                        {{dia.nombre}}
+                      </mat-chip-option>
+                    </mat-chip-listbox>
+                  </div>
+                </div>
+                
+                <div class="turnos-seleccion">
+                  <div *ngFor="let dia of turnosForm.get('diasSeleccionados')?.value" class="dia-turnos">
+                    <h3>{{getDiaNombre(dia)}}</h3>
+                    <div class="turnos-list">
+                      <mat-card class="turno-card" *ngFor="let turno of getTurnosByDia(dia)" 
+                                (click)="seleccionarTurno(dia, turno.id)">
+                        <mat-card-content>
+                          <div class="turno-hora">{{formatHora(turno.hora)}}</div>
+                          <div class="turno-descripcion">{{turno.descripcion}}</div>
+                        </mat-card-content>
+                      </mat-card>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </mat-card-content>
+          </mat-card>
+        </div>
+        
+        <!-- Paso 4: Información de pago -->
+        <div class="form-step" *ngIf="pasoActual === 3">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Información de pago</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <form [formGroup]="pagoForm" class="pago-form">
+                <div class="registro-pago-toggle">
+                  <mat-checkbox formControlName="registrarPago" color="primary">
+                    Registrar pago ahora
+                  </mat-checkbox>
+                  <p class="info-text" *ngIf="pagoForm.get('registrarPago')?.value">
+                    Complete la información del pago a continuación
+                  </p>
+                  <p class="info-text" *ngIf="!pagoForm.get('registrarPago')?.value">
+                    El pago podrá ser registrado posteriormente desde la sección de pagos
+                  </p>
+                </div>
+                
+                <div *ngIf="pagoForm.get('registrarPago')?.value">
+                  <div class="pago-inputs">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Monto</mat-label>
+                      <input matInput type="number" formControlName="monto">
+                      <span matPrefix>$&nbsp;</span>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline">
+                      <mat-label>Método de pago</mat-label>
+                      <mat-select formControlName="metodoPago">
+                        <mat-option *ngFor="let metodo of metodosPago" [value]="metodo.valor">
+                          {{metodo.nombre}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline">
+                      <mat-label>Fecha de pago</mat-label>
+                      <input matInput [matDatepicker]="pickerPago" formControlName="fechaPago">
+                      <mat-datepicker-toggle matSuffix [for]="pickerPago"></mat-datepicker-toggle>
+                      <mat-datepicker #pickerPago></mat-datepicker>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-label>Descripción (opcional)</mat-label>
+                      <textarea matInput formControlName="descripcion" rows="3"
+                                placeholder="Detalles adicionales del pago"></textarea>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </form>
+            </mat-card-content>
+          </mat-card>
+        </div>
+        
+        <!-- Paso 5: Confirmación -->
+        <div class="form-step" *ngIf="pasoActual === 4">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Confirmación</mat-card-title>
+              <mat-card-subtitle>
+                Verifica que toda la información sea correcta antes de confirmar
+              </mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="confirmacion-content">
+                <div class="confirmacion-section">
+                  <h3>Información del usuario</h3>
+                  <div class="confirmacion-data">
+                    <div class="confirmacion-row">
+                      <span class="confirmacion-label">Nombre:</span>
+                      <span class="confirmacion-value">{{usuarioForm.get('usuarioNombre')?.value}}</span>
+                    </div>
+                    <div class="confirmacion-row">
+                      <span class="confirmacion-label">DNI:</span>
+                      <span class="confirmacion-value">
+                        {{getUsuarioDni()}}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="confirmacion-section">
+                  <h3>Información del plan</h3>
+                  <div class="confirmacion-data">
+                    <div class="confirmacion-row">
+                      <span class="confirmacion-label">Plan:</span>
+                      <span class="confirmacion-value">{{getPlanNombre()}}</span>
+                    </div>
+                    <div class="confirmacion-row">
+                      <span class="confirmacion-label">Precio:</span>
+                      <span class="confirmacion-value">${{getPlanPrecio()}}</span>
+                    </div>
+                    <div class="confirmacion-row">
+                      <span class="confirmacion-label">Frecuencia:</span>
+                      <span class="confirmacion-value">
+                        {{planForm.get('frecuencia')?.value}} veces por semana
+                      </span>
+                    </div>
+                    <div class="confirmacion-row">
+                      <span class="confirmacion-label">Fecha inicio:</span>
+                      <span class="confirmacion-value">
+                        {{planForm.get('fechaInicio')?.value | date:'dd/MM/yyyy'}}
+                      </span>
+                    </div>
+                    <div class="confirmacion-row">
+                      <span class="confirmacion-label">Fecha fin:</span>
+                      <span class="confirmacion-value">
+                        {{planForm.get('fechaFin')?.value | date:'dd/MM/yyyy'}}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="confirmacion-section">
+                  <h3>Días y turnos seleccionados</h3>
+                  <div class="confirmacion-data">
+                    <div class="confirmacion-row" *ngFor="let dia of turnosForm.get('diasSeleccionados')?.value">
+                      <span class="confirmacion-label">{{getDiaNombre(dia)}}:</span>
+                      <span class="confirmacion-value">
+                        {{formatHora(getTurnosByDia(dia)[0]?.hora)}} - {{getTurnosByDia(dia)[0]?.descripcion}}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="confirmacion-section" *ngIf="pagoForm.get('registrarPago')?.value">
+                  <h3>Información de pago</h3>
+                  <div class="confirmacion-data">
+                    <div class="confirmacion-row">
+                      <span class="confirmacion-label">Monto:</span>
+                      <span class="confirmacion-value">${{pagoForm.get('monto')?.value}}</span>
+                    </div>
+                    <div class="confirmacion-row">
+                      <span class="confirmacion-label">Método:</span>
+                      <span class="confirmacion-value">{{getMetodoPagoNombre()}}</span>
+                    </div>
+                    <div class="confirmacion-row">
+                      <span class="confirmacion-label">Fecha:</span>
+                      <span class="confirmacion-value">
+                        {{pagoForm.get('fechaPago')?.value | date:'dd/MM/yyyy'}}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+      
+      <!-- Botones de navegación -->
+      <div class="form-actions">
+        <button mat-button (click)="cancelar()">Cancelar</button>
+        <button mat-button color="primary" *ngIf="pasoActual > 0" (click)="irAPaso(pasoActual - 1)">
+          Anterior
+        </button>
+        <button mat-button color="primary" *ngIf="pasoActual < pasosLabels.length - 1" (click)="irAPaso(pasoActual + 1)">
+          Siguiente
+        </button>
+        <button mat-raised-button color="primary" *ngIf="pasoActual === pasosLabels.length - 1" (click)="guardarInscripcion()">
+          {{isEditMode ? (isRenovacionMode ? 'Renovar' : 'Actualizar') : 'Guardar'}}
+        </button>
+      </div>
+    </div>
+  </div>

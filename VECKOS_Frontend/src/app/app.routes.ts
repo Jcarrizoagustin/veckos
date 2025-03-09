@@ -60,10 +60,27 @@ export const routes: Routes = [
         path: 'turnos/editar/:id',
         loadComponent: () => import('./features/turnos/turno-form/turno-form.component').then(c => c.TurnoFormComponent)
       },
-      /*{
+      {
         path: 'turnos/usuarios/:id',
         loadComponent: () => import('./features/turnos/turno-usuarios/turno-usuarios.component').then(c => c.TurnoUsuariosComponent)
-      }*/
+      },
+      {
+        path: 'inscripciones/nueva',
+        loadComponent: () => import('./features/inscripciones/inscripcion-form/inscripcion-form.component').then(c => c.InscripcionFormComponent)
+      },
+      {
+        path: 'inscripciones/editar/:id',
+        loadComponent: () => import('./features/inscripciones/inscripcion-form/inscripcion-form.component').then(c => c.InscripcionFormComponent)
+      },
+      {
+        path: 'inscripciones/renovar/:id',
+        loadComponent: () => import('./features/inscripciones/inscripcion-form/inscripcion-form.component').then(c => c.InscripcionFormComponent),
+        data: { renovar: true }
+      },
+      {
+        path: 'usuario/:usuarioId/inscripcion',
+        loadComponent: () => import('./features/inscripciones/inscripcion-form/inscripcion-form.component').then(c => c.InscripcionFormComponent)
+      }
       // Aquí se añadirán más rutas para cada funcionalidad
     ]
   },
