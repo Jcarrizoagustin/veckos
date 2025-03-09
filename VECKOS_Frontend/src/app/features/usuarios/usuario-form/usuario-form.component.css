@@ -1,0 +1,338 @@
+.usuario-form-container {
+    padding: 20px;
+    min-height: calc(100vh - 120px);
+  }
+  
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+  }
+  
+  .loading-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #6C13F1;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 2s linear infinite;
+    margin-bottom: 16px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .usuario-form-content {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .form-header {
+    margin-bottom: 20px;
+  }
+  
+  .form-header h1 {
+    color: #6C13F1;
+    font-size: 24px;
+    font-weight: 500;
+    margin: 0;
+  }
+  
+  /* Estilos para los pasos */
+  .steps-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .step-number {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #E0E0E0;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  
+  .step.active .step-number {
+    background-color: #6C13F1;
+    color: white;
+  }
+  
+  .step.completed .step-number {
+    background-color: #6C13F1;
+    color: white;
+  }
+  
+  .step-label {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .step.active .step-label {
+    color: #6C13F1;
+    font-weight: 500;
+  }
+  
+  .step-connector {
+    flex: 1;
+    height: 2px;
+    background-color: #E0E0E0;
+    margin: 0 12px;
+    margin-bottom: 24px;
+  }
+  
+  .step-connector.active {
+    background-color: #6C13F1;
+  }
+  
+  /* Estilos para los formularios */
+  .form-step {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-container {
+    padding: 24px;
+  }
+  
+  .form-container h2 {
+    font-size: 20px;
+    font-weight: 500;
+    margin: 0 0 8px 0;
+  }
+  
+  .form-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin: 0 0 24px 0;
+  }
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
+  .form-field {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  label {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  
+  .form-input {
+    padding: 12px;
+    border: 1px solid #E0E0E0;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .form-input:focus {
+    outline: none;
+    border-color: #6C13F1;
+  }
+  
+  .error-message {
+    color: #F44336;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  
+  .button-container {
+    padding: 16px 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    border-top: 1px solid #E0E0E0;
+  }
+  
+  .primary-button {
+    padding: 8px 24px;
+    background-color: #6C13F1;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .primary-button:hover {
+    background-color: #5b10cc;
+  }
+  
+  .secondary-button {
+    padding: 8px 24px;
+    background-color: white;
+    color: #333;
+    border: 1px solid #E0E0E0;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .secondary-button:hover {
+    background-color: #f5f5f5;
+  }
+  
+  /* Estilos para el formulario de plan */
+  .plan-form {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  .plan-selection, .frecuencia-selection, .fecha-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .plan-cards, .frecuencia-cards {
+    display: flex;
+    gap: 16px;
+  }
+  
+  .plan-card, .frecuencia-card {
+    flex: 1;
+    padding: 16px;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .plan-card:hover, .frecuencia-card:hover {
+    border-color: #6C13F1;
+  }
+  
+  .plan-card.selected, .frecuencia-card.selected {
+    border-color: #6C13F1;
+    background-color: #EDE7F6;
+  }
+  
+  .plan-icon, .frecuencia-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background-color: #EDE7F6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  
+  .plan-icon mat-icon, .frecuencia-icon mat-icon {
+    color: #6C13F1;
+  }
+  
+  .plan-name, .frecuencia-value {
+    font-size: 18px;
+    font-weight: 500;
+  }
+  
+  .frecuencia-label {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+  }
+  
+  .fecha-button {
+    padding: 12px 24px;
+    background-color: #6C13F1;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    align-self: flex-start;
+  }
+  
+  .fecha-button:hover {
+    background-color: #5b10cc;
+  }
+  
+  /* Estilos para la confirmación */
+  .confirmation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+  }
+  
+  .confirmation-section h3 {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0 0 16px 0;
+  }
+  
+  .confirmation-data {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .confirmation-row {
+    display: flex;
+    align-items: center;
+  }
+  
+  .confirmation-label {
+    font-weight: 500;
+    margin-right: 8px;
+    min-width: 120px;
+  }
+  
+  .confirmation-value {
+    flex: 1;
+  }
+  
+  .edit-button {
+    background: none;
+    border: none;
+    color: #6C13F1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .plan-cards, .frecuencia-cards {
+      flex-direction: column;
+    }
+    
+    .confirmation-grid {
+      grid-template-columns: 1fr;
+    }
+  }

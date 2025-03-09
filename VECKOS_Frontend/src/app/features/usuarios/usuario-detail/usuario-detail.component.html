@@ -1,0 +1,216 @@
+<div class="usuario-detail-container">
+    <div class="loading-container" *ngIf="isLoading">
+      <div class="loading-spinner"></div>
+      <p>Cargando información del usuario...</p>
+    </div>
+    
+    <div class="usuario-content" *ngIf="!isLoading && usuario">
+      <!-- Tarjetas de estadísticas -->
+      <div class="stats-cards">
+        <div class="stat-card">
+          <div class="stat-info">
+            <div class="stat-value">
+              {{usuario.estadisticas.totalClases}}
+              <span class="trend-indicator positive" *ngIf="usuario.estadisticas.crecimientoClases > 0">
+                +{{usuario.estadisticas.crecimientoClases}}%
+              </span>
+              <span class="trend-indicator negative" *ngIf="usuario.estadisticas.crecimientoClases < 0">
+                {{usuario.estadisticas.crecimientoClases}}%
+              </span>
+            </div>
+            <div class="stat-label">Total clases tomadas</div>
+          </div>
+          <div class="stat-chart">
+            <svg viewBox="0 0 100 30" class="trend-chart">
+              <path d="M0,15 Q20,5 40,20 T80,15" stroke="#6C13F1" stroke-width="2" fill="none" />
+            </svg>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-info">
+            <div class="stat-value">
+              {{usuario.estadisticas.asistencia}}%
+              <span class="trend-indicator positive" *ngIf="usuario.estadisticas.crecimientoAsistencia > 0">
+                +{{usuario.estadisticas.crecimientoAsistencia}}%
+              </span>
+              <span class="trend-indicator negative" *ngIf="usuario.estadisticas.crecimientoAsistencia < 0">
+                {{usuario.estadisticas.crecimientoAsistencia}}%
+              </span>
+            </div>
+            <div class="stat-label">Asistencia</div>
+          </div>
+          <div class="stat-chart">
+            <svg viewBox="0 0 100 30" class="trend-chart">
+              <path d="M0,15 Q30,5 50,10 T100,5" stroke="#4CAF50" stroke-width="2" fill="none" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Gráfico y perfil -->
+      <div class="chart-profile-container">
+        <!-- Gráfico de seguimiento -->
+        <div class="chart-container">
+          <h3>Seguimiento</h3>
+          <div class="chart-legend">
+            <div class="legend-item">
+              <span class="legend-color" style="background-color: #F44336;"></span>
+              <span>Income</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color" style="background-color: #6C13F1;"></span>
+              <span>Outcome</span>
+            </div>
+          </div>
+          <div class="chart-wrapper">
+            <!-- Chart placeholder - would be replaced with actual NgxCharts in production -->
+            <div class="chart-placeholder">
+              <svg viewBox="0 0 500 200" class="chart-svg">
+                <!-- Red line (Income) -->
+                <path d="M50,50 L150,20 L250,10 L350,30 L450,50" stroke="#F44336" stroke-width="3" fill="none" />
+                <!-- Purple line (Outcome) -->
+                <path d="M50,100 L150,80 L250,90 L350,70 L450,80" stroke="#6C13F1" stroke-width="3" fill="none" />
+                
+                <!-- X-axis labels -->
+                <text x="50" y="180" class="chart-label">25.02</text>
+                <text x="150" y="180" class="chart-label">26.02</text>
+                <text x="250" y="180" class="chart-label">27.02</text>
+                <text x="350" y="180" class="chart-label">28.02</text>
+                <text x="450" y="180" class="chart-label">29.02</text>
+                
+                <!-- Y-axis grid lines -->
+                <line x1="0" y1="50" x2="500" y2="50" stroke="#e0e0e0" stroke-width="1" />
+                <line x1="0" y1="100" x2="500" y2="100" stroke="#e0e0e0" stroke-width="1" />
+                <line x1="0" y1="150" x2="500" y2="150" stroke="#e0e0e0" stroke-width="1" />
+                
+                <!-- Reference line -->
+                <line x1="250" y1="0" x2="250" y2="200" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="5,5" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Perfil del usuario -->
+        <div class="profile-container">
+          <h3>Perfil</h3>
+          <div class="profile-content">
+            <div class="profile-avatar">
+              <img [src]="'assets/images/avatar.png'" alt="Avatar del usuario"
+                   onerror="this.src='assets/images/avatar-placeholder.jpg'">
+            </div>
+            <div class="profile-info">
+              <h2 class="profile-name">{{usuario.nombre}} {{usuario.apellido}}</h2>
+              <div class="profile-status" [ngClass]="getEstadoClass(usuario.estado)">
+                {{usuario.estado}}
+              </div>
+              <div class="profile-payment">
+                Próxima fecha pago: {{usuario.inscripcionActiva.proximoPago}}
+              </div>
+              <div class="profile-actions">
+                <button class="action-button" (click)="editUsuario()">
+                  <mat-icon>edit</mat-icon>
+                  Editar Información
+                </button>
+                <button class="action-button" (click)="editPlan()">
+                  <mat-icon>edit</mat-icon>
+                  Editar Plan
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tabs de información -->
+      <mat-tab-group class="info-tabs" animationDuration="0ms">
+        <!-- Tab de inscripciones -->
+        <mat-tab label="Inscripciones">
+          <div class="tab-content">
+            <table class="detail-table">
+              <thead>
+                <tr>
+                  <th>Fecha inicio</th>
+                  <th>Fecha fin</th>
+                  <th>Plan</th>
+                  <th>Precio</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let inscripcion of inscripciones">
+                  <td>{{inscripcion.fechaInicio}}</td>
+                  <td>{{inscripcion.fechaFin}}</td>
+                  <td>{{inscripcion.plan}}</td>
+                  <td>{{inscripcion.precio}}</td>
+                  <td>
+                    <span class="estado-chip" [ngClass]="getEstadoClass(inscripcion.estado)">
+                      {{inscripcion.estado}}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </mat-tab>
+        
+        <!-- Tab de asistencias -->
+        <mat-tab label="Asistencias">
+          <div class="tab-content">
+            <table class="detail-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Turno</th>
+                  <th>Asistencia</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let asistencia of asistencias">
+                  <td>{{asistencia.fecha}}</td>
+                  <td>{{asistencia.turno}}</td>
+                  <td>
+                    <span class="asistencia-chip" [ngClass]="getAsistenciaClass(asistencia.presente)">
+                      {{asistencia.presente ? 'Presente' : 'Ausente'}}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </mat-tab>
+        
+        <!-- Tab de pagos -->
+        <mat-tab label="Pagos">
+          <div class="tab-content">
+            <table class="detail-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Monto</th>
+                  <th>Método</th>
+                  <th>Descripción</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let pago of pagos">
+                  <td>{{pago.fecha}}</td>
+                  <td>{{pago.monto}}</td>
+                  <td>{{pago.metodo}}</td>
+                  <td>{{pago.descripcion}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+      
+      <!-- Botón para volver -->
+      <div class="back-button-container">
+        <button mat-button color="primary" (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Volver a la lista
+        </button>
+      </div>
+    </div>
+  </div>

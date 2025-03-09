@@ -1,0 +1,56 @@
+<div class="sidebar">
+  <div class="logo-container">
+    <img src="assets/images/logo.png" alt="Vecko's Logo" class="logo">
+    <h1 class="title">{{currentRoute}}</h1>
+  </div>
+  
+  <div class="menu-container">
+    <div class="menu-section">
+      <div class="menu-item" routerLink="/dashboard" routerLinkActive="active">
+        <div class="menu-icon">
+          <i class="icon-home">🏠</i>
+        </div>
+        <span class="menu-text">Inicio</span>
+        <div class="menu-arrow">
+          <i class="icon-arrow">▾</i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="menu-section">
+      <div class="menu-header" (click)="togglePages()">
+        <div class="menu-icon">
+          <i class="icon-pages">📄</i>
+        </div>
+        <span class="menu-text">Páginas</span>
+        <div class="menu-arrow" [class.open]="pagesOpen">
+          <i class="icon-arrow">▾</i>
+        </div>
+      </div>
+      
+      <div class="submenu" *ngIf="pagesOpen">
+        <div class="menu-item submenu-item" (click)="toggleProfile()">
+          <span class="menu-text">Perfil</span>
+          <div class="menu-arrow" [class.open]="profileOpen">
+            <i class="icon-arrow">▾</i>
+          </div>
+        </div>
+        
+        <div class="menu-item submenu-item" (click)="toggleUsers()">
+          <span class="menu-text">Usuarios</span>
+          <div class="menu-arrow" [class.open]="usersOpen">
+            <i class="icon-arrow">▾</i>
+          </div>
+        </div>
+        
+        <div class="menu-item submenu-item" routerLink="/dashboard/reportes" routerLinkActive="active">
+          <span class="menu-text">Reportes</span>
+        </div>
+        
+        <div class="menu-item submenu-item" routerLink="/dashboard/nuevo-usuario" routerLinkActive="active">
+          <span class="menu-text">Nuevo usuario</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

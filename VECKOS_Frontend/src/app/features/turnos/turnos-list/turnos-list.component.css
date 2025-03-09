@@ -1,0 +1,127 @@
+.turnos-container {
+    padding: 20px;
+    min-height: calc(100vh - 120px);
+  }
+  
+  .turnos-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  
+  .turnos-header h1 {
+    margin: 0;
+    color: #6C13F1;
+    font-size: 24px;
+    font-weight: 500;
+  }
+  
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+  }
+  
+  .loading-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #6C13F1;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 2s linear infinite;
+    margin-bottom: 16px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .turnos-content {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dia-turnos {
+    padding: 20px;
+  }
+  
+  .no-turnos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    gap: 16px;
+  }
+  
+  .no-turnos p {
+    color: #666;
+    font-size: 16px;
+  }
+  
+  .turnos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .turno-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .turno-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+  
+  .turno-icon {
+    background-color: #EDE7F6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .turno-icon mat-icon {
+    color: #6C13F1;
+  }
+  
+  .turno-usuarios {
+    display: flex;
+    align-items: center;
+    margin-top: 12px;
+  }
+  
+  .usuarios-label {
+    margin-left: 8px;
+    color: #666;
+  }
+  
+  mat-card-actions {
+    display: flex;
+    justify-content: space-around;
+    padding: 8px;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .turnos-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    
+    mat-card-actions {
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    mat-card-actions button {
+      width: 100%;
+    }
+  }

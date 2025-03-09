@@ -1,0 +1,219 @@
+<div class="usuario-form-container">
+    <div class="loading-container" *ngIf="isLoading">
+      <div class="loading-spinner"></div>
+      <p>{{ isEditMode ? 'Cargando información del usuario...' : 'Creando usuario...' }}</p>
+    </div>
+    
+    <div class="usuario-form-content" *ngIf="!isLoading">
+      <div class="form-header">
+        <h1>{{ isEditMode ? 'Editar usuario' : 'Nuevo usuario' }}</h1>
+      </div>
+      
+      <!-- Indicador de pasos -->
+      <div class="steps-container">
+        <div class="step" [class.active]="pasoActual === 0" [class.completed]="pasoActual > 0">
+          <div class="step-number">1</div>
+          <div class="step-label">Informacion</div>
+        </div>
+        <div class="step-connector" [class.active]="pasoActual > 0"></div>
+        <div class="step" [class.active]="pasoActual === 1" [class.completed]="pasoActual > 1" *ngIf="!isEditMode">
+          <div class="step-number">2</div>
+          <div class="step-label">Plan</div>
+        </div>
+        <div class="step-connector" [class.active]="pasoActual > 1" *ngIf="!isEditMode"></div>
+        <div class="step" [class.active]="pasoActual === 2 || (isEditMode && pasoActual === 1)">
+          <div class="step-number">{{ isEditMode ? '2' : '3' }}</div>
+          <div class="step-label">Confirmación</div>
+        </div>
+      </div>
+      
+      <!-- Paso 1: Información del usuario -->
+      <div class="form-step" *ngIf="pasoActual === 0">
+        <div class="form-container">
+          <h2>Informacion</h2>
+          <p class="form-subtitle">Informacion basica del usuario</p>
+          
+          <form [formGroup]="usuarioForm" class="form-grid">
+            <div class="form-field">
+              <label for="nombre">Nombre</label>
+              <input id="nombre" type="text" formControlName="nombre" placeholder="ej. Agustín" class="form-input">
+              <div class="error-message" *ngIf="usuarioForm.get('nombre')?.touched && usuarioForm.get('nombre')?.errors?.['required']">
+                El nombre es obligatorio
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label for="apellido">Apellido</label>
+              <input id="apellido" type="text" formControlName="apellido" placeholder="ej. Carrizo" class="form-input">
+              <div class="error-message" *ngIf="usuarioForm.get('apellido')?.touched && usuarioForm.get('apellido')?.errors?.['required']">
+                El apellido es obligatorio
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label for="dni">DNI</label>
+              <input id="dni" type="text" formControlName="dni" placeholder="ej. 12345678" class="form-input">
+              <div class="error-message" *ngIf="usuarioForm.get('dni')?.touched && usuarioForm.get('dni')?.errors?.['required']">
+                El DNI es obligatorio
+              </div>
+              <div class="error-message" *ngIf="usuarioForm.get('dni')?.touched && usuarioForm.get('dni')?.errors?.['pattern']">
+                El DNI debe tener 8 dígitos
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label for="cuil">CUIL</label>
+              <input id="cuil" type="text" formControlName="cuil" placeholder="ej. 20-12345678-5" class="form-input">
+              <div class="error-message" *ngIf="usuarioForm.get('cuil')?.touched && usuarioForm.get('cuil')?.errors?.['pattern']">
+                El formato debe ser XX-XXXXXXXX-X
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label for="fechaNacimiento">Fecha Nacimiento</label>
+              <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento" class="form-input">
+              <div class="error-message" *ngIf="usuarioForm.get('fechaNacimiento')?.touched && usuarioForm.get('fechaNacimiento')?.errors?.['required']">
+                La fecha de nacimiento es obligatoria
+              </div>
+            </div>
+            
+            <div class="form-field">
+              <label for="telefono">Teléfono</label>
+              <input id="telefono" type="text" formControlName="telefono" placeholder="ej. 3834112233" class="form-input">
+              <div class="error-message" *ngIf="usuarioForm.get('telefono')?.touched && usuarioForm.get('telefono')?.errors?.['pattern']">
+                El teléfono debe tener 10 dígitos
+              </div>
+            </div>
+          </form>
+        </div>
+        
+        <div class="button-container">
+          <button class="secondary-button" (click)="cancel()">Cancelar</button>
+          <button class="primary-button" (click)="nextStep()">Siguiente</button>
+        </div>
+      </div>
+      
+      <!-- Paso 2: Plan (solo para creación) -->
+      <div class="form-step" *ngIf="pasoActual === 1 && !isEditMode">
+        <div class="form-container">
+          <h2>Plan</h2>
+          <p class="form-subtitle">Informacion sobre el plan de entrenamiento</p>
+          
+          <form [formGroup]="planForm" class="plan-form">
+            <div class="plan-selection">
+              <label>Selecciona el plan de entrenamieто</label>
+              <div class="plan-cards">
+                <div class="plan-card" *ngFor="let plan of planes" 
+                     [class.selected]="planForm.get('planId')?.value === plan.id"
+                     (click)="planForm.get('planId')?.setValue(plan.id)">
+                  <div class="plan-icon">
+                    <mat-icon>people</mat-icon>
+                  </div>
+                  <div class="plan-name">{{plan.nombre}}</div>
+                </div>
+              </div>
+              <div class="error-message" *ngIf="planForm.get('planId')?.touched && planForm.get('planId')?.errors?.['required']">
+                Debe seleccionar un plan
+              </div>
+            </div>
+            
+            <div class="frecuencia-selection">
+              <label>Selecciona la frecuencia semanal</label>
+              <div class="frecuencia-cards">
+                <div class="frecuencia-card" *ngFor="let f of frecuencias"
+                     [class.selected]="planForm.get('frecuencia')?.value === f.value"
+                     (click)="planForm.get('frecuencia')?.setValue(f.value)">
+                  <div class="frecuencia-icon">
+                    <mat-icon>people</mat-icon>
+                  </div>
+                  <div class="frecuencia-value">{{f.value}}</div>
+                  <div class="frecuencia-label">{{f.label}}</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="fecha-selection">
+              <label>Fecha de inicio</label>
+              <button class="fecha-button">Seleccionar fechas</button>
+            </div>
+          </form>
+        </div>
+        
+        <div class="button-container">
+          <button class="secondary-button" (click)="prevStep()">Anterior</button>
+          <button class="primary-button" (click)="nextStep()">Siguiente</button>
+        </div>
+      </div>
+      
+      <!-- Paso 3: Confirmación -->
+      <div class="form-step" *ngIf="pasoActual === 2 || (isEditMode && pasoActual === 1)">
+        <div class="form-container">
+          <h2>Confirmación</h2>
+          <p class="form-subtitle">Confirmá que toda la información este correctamente cargada.</p>
+          
+          <div class="confirmation-grid">
+            <div class="confirmation-section">
+              <h3>Informacion del usuario</h3>
+              <div class="confirmation-data">
+                <div class="confirmation-row">
+                  <span class="confirmation-label">Nombre completo:</span>
+                  <span class="confirmation-value">{{usuarioForm.get('nombre')?.value}} {{usuarioForm.get('apellido')?.value}}</span>
+                  <button class="edit-button" (click)="pasoActual = 0">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                </div>
+                
+                <div class="confirmation-row">
+                  <span class="confirmation-label">DNI:</span>
+                  <span class="confirmation-value">{{usuarioForm.get('dni')?.value}}</span>
+                </div>
+                
+                <div class="confirmation-row">
+                  <span class="confirmation-label">CUIL:</span>
+                  <span class="confirmation-value">{{usuarioForm.get('cuil')?.value}}</span>
+                </div>
+                
+                <div class="confirmation-row">
+                  <span class="confirmation-label">Teléfono:</span>
+                  <span class="confirmation-value">{{usuarioForm.get('telefono')?.value}}</span>
+                </div>
+                
+                <div class="confirmation-row">
+                  <span class="confirmation-label">Fecha nacimiento:</span>
+                  <span class="confirmation-value">{{usuarioForm.get('fechaNacimiento')?.value | date: 'dd/MM/yyyy'}}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="confirmation-section" *ngIf="!isEditMode">
+              <h3>Informacion del plan</h3>
+              <div class="confirmation-data">
+                <div class="confirmation-row">
+                  <span class="confirmation-label">Plan:</span>
+                  <span class="confirmation-value">{{getPlanNombre(planForm.get('planId')?.value)}}</span>
+                  <button class="edit-button" (click)="pasoActual = 1">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                </div>
+                
+                <div class="confirmation-row">
+                  <span class="confirmation-label">Frecuencia:</span>
+                  <span class="confirmation-value">{{planForm.get('frecuencia')?.value}} veces por semana</span>
+                </div>
+                
+                <div class="confirmation-row">
+                  <span class="confirmation-label">Fecha inicio:</span>
+                  <span class="confirmation-value">{{planForm.get('fechaInicio')?.value | date: 'dd/MM/yyyy'}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="button-container">
+          <button class="secondary-button" (click)="prevStep()">Anterior</button>
+          <button class="primary-button" (click)="onSubmit()">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>

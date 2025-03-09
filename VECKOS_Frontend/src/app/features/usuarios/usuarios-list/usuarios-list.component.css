@@ -1,0 +1,102 @@
+.usuarios-container {
+    padding: 20px;
+    position: relative;
+    min-height: calc(100vh - 120px);
+  }
+  
+  .usuarios-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .usuarios-header h1 {
+    color: #6C13F1;
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+  }
+  
+  .search-container {
+    width: 300px;
+  }
+  
+  .search-field {
+    width: 100%;
+  }
+  
+  .usuarios-table-container {
+    overflow: auto;
+  }
+  
+  .usuarios-table {
+    width: 100%;
+    background-color: white;
+    border-radius: 8px;
+  }
+  
+  .avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #E0E0E0;
+  }
+  
+  .avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .estado-chip {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-block;
+  }
+  
+  .estado-activo {
+    background-color: #E8F5E9;
+    color: #4CAF50;
+  }
+  
+  .estado-inactivo {
+    background-color: #FFEBEE;
+    color: #F44336;
+  }
+  
+  .estado-pendiente {
+    background-color: #FFF8E1;
+    color: #FFC107;
+  }
+  
+  .acciones-column {
+    white-space: nowrap;
+  }
+  
+  .add-button-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .usuarios-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .search-container {
+      width: 100%;
+      margin-top: 15px;
+    }
+    
+    .estado-chip {
+      padding: 2px 8px;
+      font-size: 10px;
+    }
+  }

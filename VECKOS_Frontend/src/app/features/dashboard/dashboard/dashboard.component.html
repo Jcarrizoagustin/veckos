@@ -1,0 +1,77 @@
+<div class="dashboard-container">
+    <!-- Sección de horarios -->
+    <div class="schedule-section">
+      <div class="schedule-header">
+        <div class="hour-selector">
+          <button class="hour-nav" (click)="previousHour()">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <span class="current-hour">{{currentHour}}</span>
+          <button class="hour-nav" (click)="nextHour()">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+        <div class="today-indicator" *ngIf="isToday">
+          HOY
+        </div>
+      </div>
+      
+      <div class="schedule-content">
+        <div class="days-header">
+          <div class="day-header" *ngFor="let day of daysOfWeek">
+            {{day}}
+          </div>
+        </div>
+        
+        <div class="schedule-grid">
+          <div class="day-column" *ngFor="let dayData of scheduleData">
+            <div class="user-card" *ngFor="let user of dayData.users" [ngClass]="getUserStatusClass(user.status)">
+              {{user.fullName}}
+            </div>
+            <button class="add-user-button" (click)="addUser(dayData.day)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Sección de estadísticas -->
+    <div class="stats-section">
+      <div class="stat-header">
+        <h2>Usuarios activos</h2>
+        <div class="stat-number">{{totalActiveUsers}}</div>
+        <div class="stat-trend">
+          <div class="trend-line"></div>
+        </div>
+      </div>
+      
+      <div class="stat-chart">
+        <ngx-charts-bar-vertical
+          [results]="chartData"
+          [scheme]="colorScheme"
+          [gradient]="false"
+          [xAxis]="true"
+          [yAxis]="true"
+          [showXAxisLabel]="false"
+          [showYAxisLabel]="false"
+          [showGridLines]="true"
+          [barPadding]="10"
+          [roundDomains]="true"
+          [roundEdges]="true">
+        </ngx-charts-bar-vertical>
+      </div>
+      
+      <div class="plan-stats">
+        <div class="plan-stat-card" *ngFor="let planStat of usersByPlan">
+          <div class="plan-icon" [style.backgroundColor]="planStat.color + '20'">
+            <mat-icon [style.color]="planStat.color">people</mat-icon>
+          </div>
+          <div class="plan-info">
+            <div class="plan-name">{{planStat.name}}</div>
+            <div class="plan-value">{{planStat.value}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

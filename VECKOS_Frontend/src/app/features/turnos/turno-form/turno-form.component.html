@@ -1,0 +1,57 @@
+<div class="turno-form-container">
+    <div class="turno-form-header">
+      <h1>{{ isEditMode ? 'Editar Turno' : 'Nuevo Turno' }}</h1>
+    </div>
+    
+    <div class="loading-container" *ngIf="isLoading">
+      <div class="loading-spinner"></div>
+      <p>Cargando información del turno...</p>
+    </div>
+    
+    <mat-card class="turno-form-card" *ngIf="!isLoading">
+      <form [formGroup]="turnoForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Día de la semana</mat-label>
+          <mat-select formControlName="diaSemana">
+            <mat-option *ngFor="let dia of diasSemana" [value]="dia.value">
+              {{dia.nombre}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="turnoForm.get('diaSemana')?.hasError('required')">
+            El día de la semana es obligatorio
+          </mat-error>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Hora</mat-label>
+          <mat-select formControlName="hora">
+            <mat-option *ngFor="let hora of horas" [value]="hora.value">
+              {{hora.label}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="turnoForm.get('hora')?.hasError('required')">
+            La hora es obligatoria
+          </mat-error>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Descripción</mat-label>
+          <input matInput formControlName="descripcion" placeholder="Ej. Turno mañana">
+        </mat-form-field>
+        
+        <div class="form-summary" *ngIf="turnoForm.valid && turnoForm.dirty">
+          <h3>Resumen del turno</h3>
+          <p>Se creará un turno para el día <strong>{{getDiaSemana(turnoForm.get('diaSemana')?.value)}}</strong> 
+            a las <strong>{{turnoForm.get('hora')?.value?.substring(0, 5)}}</strong>.</p>
+        </div>
+        
+        <div class="form-actions">
+          <button mat-button type="button" (click)="cancel()">Cancelar</button>
+          <button mat-raised-button color="primary" type="submit" 
+                  [disabled]="turnoForm.invalid || isSaving">
+            {{ isSaving ? 'Guardando...' : (isEditMode ? 'Actualizar' : 'Crear') }}
+          </button>
+        </div>
+      </form>
+    </mat-card>
+  </div>
