@@ -4,12 +4,10 @@ import com.veckos.VECKOS_Backend.entities.Rol;
 import com.veckos.VECKOS_Backend.entities.UsuarioSistema;
 import com.veckos.VECKOS_Backend.security.repositories.RolRepository;
 import com.veckos.VECKOS_Backend.security.repositories.UsuarioSistemaRepository;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 
 import java.util.HashSet;
 import java.util.List;
@@ -36,7 +34,6 @@ public class DataInitializer implements CommandLineRunner {
         crearUsuarioAdmin();
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void inicializarRoles() {
         // Comprobar si hay roles de forma más directa
         List<Rol> roles = rolRepository.findAll();
@@ -62,7 +59,6 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void crearUsuarioAdmin() {
         // Verificar si ya existe el usuario admin de forma más directa
         if (!usuarioRepository.existsByUsername("jmartinez")) {
@@ -85,7 +81,7 @@ public class DataInitializer implements CommandLineRunner {
                 // Guardar usuario
                 usuarioRepository.save(admin);
 
-                System.out.println("Usuario administrador (jmartinez) creado correctamente.");
+                System.out.println("Usuario administrador " + admin.getUsername() +  " creado correctamente.");
             } catch (Exception e) {
                 System.err.println("Error al crear usuario administrador: " + e.getMessage());
                 e.printStackTrace();
