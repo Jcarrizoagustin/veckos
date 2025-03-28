@@ -49,3 +49,6 @@ Thumbs.db
 # General
 *.log
 .DS_Store
+
+#DB
+*.db
