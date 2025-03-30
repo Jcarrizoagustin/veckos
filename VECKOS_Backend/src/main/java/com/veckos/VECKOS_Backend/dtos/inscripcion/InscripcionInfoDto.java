@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +21,7 @@ public class InscripcionInfoDto {
     private String apellidoUsuario;
     private String nombrePlan;
     private Long planId;
+    private BigDecimal precioPlan;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
     private Integer frecuencia;
@@ -40,6 +42,7 @@ public class InscripcionInfoDto {
         this.frecuencia = inscripcion.getFrecuencia();
         this.estadoPago = inscripcion.getEstadoPago();
         this.ultimoPago = inscripcion.getUltimoPago();
+        this.precioPlan = inscripcion.getPlan().getPrecio();
 
         if (inscripcion.getDetalles() != null) {
             this.detalles = inscripcion.getDetalles().stream()
