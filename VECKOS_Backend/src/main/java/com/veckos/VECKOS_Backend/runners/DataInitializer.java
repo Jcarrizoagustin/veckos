@@ -1,7 +1,9 @@
 package com.veckos.VECKOS_Backend.runners;
 
-import com.veckos.VECKOS_Backend.entities.Rol;
-import com.veckos.VECKOS_Backend.entities.UsuarioSistema;
+import com.veckos.VECKOS_Backend.entities.*;
+import com.veckos.VECKOS_Backend.repositories.PlanRepository;
+import com.veckos.VECKOS_Backend.repositories.TurnoRepository;
+import com.veckos.VECKOS_Backend.repositories.UsuarioRepository;
 import com.veckos.VECKOS_Backend.security.repositories.RolRepository;
 import com.veckos.VECKOS_Backend.security.repositories.UsuarioSistemaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.time.*;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,13 +22,22 @@ import java.util.Set;
 public class DataInitializer implements CommandLineRunner {
 
     @Autowired
-    private UsuarioSistemaRepository usuarioRepository;
+    private UsuarioSistemaRepository usuarioSistemaRepository;
 
     @Autowired
     private RolRepository rolRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PlanRepository planRepository;
+
+    @Autowired
+    private TurnoRepository turnoRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -32,6 +46,12 @@ public class DataInitializer implements CommandLineRunner {
 
         // Crear usuario por defecto si no existe
         crearUsuarioAdmin();
+
+        crearUsuario();
+
+        crearPlan();
+
+        crearTurnos();
     }
 
     public void inicializarRoles() {
@@ -61,7 +81,7 @@ public class DataInitializer implements CommandLineRunner {
 
     public void crearUsuarioAdmin() {
         // Verificar si ya existe el usuario admin de forma más directa
-        if (!usuarioRepository.existsByUsername("jmartinez")) {
+        if (!usuarioSistemaRepository.existsByUsername("jmartinez")) {
             try {
                 // Crear usuario administrador
                 UsuarioSistema admin = new UsuarioSistema();
@@ -79,7 +99,7 @@ public class DataInitializer implements CommandLineRunner {
                 admin.setRoles(roles);
 
                 // Guardar usuario
-                usuarioRepository.save(admin);
+                usuarioSistemaRepository.save(admin);
 
                 System.out.println("Usuario administrador " + admin.getUsername() +  " creado correctamente.");
             } catch (Exception e) {
@@ -88,6 +108,77 @@ public class DataInitializer implements CommandLineRunner {
             }
         } else {
             System.out.println("El usuario administrador ya existe en la base de datos.");
+        }
+    }
+
+    public void crearUsuario(){
+        List<Usuario> usuariosList = usuarioRepository.findAll();
+        if(usuariosList.size() == 0){
+            try{
+                Usuario usuario = new Usuario();
+                usuario.setTelefono("3834556633");
+                usuario.setNombre("Agustin");
+                usuario.setApellido("Carrizo");
+                usuario.setCorreo("jcarrizo@test.com");
+                usuario.setDni("12345678");
+                usuario.setCuil("20123456780");
+                usuario.setFechaNacimiento(LocalDate.of(1996, Month.OCTOBER, 26));
+                usuario.setFechaAlta(LocalDateTime.now());
+                this.usuarioRepository.save(usuario);
+                System.err.println("Usuario  " + usuario.getNombre() + " creado correctamente");
+            }catch(Exception ex){
+                System.err.println("Error al crear usuario: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    public void crearPlan(){
+        if(this.planRepository.findAll().size() == 0){
+            try{
+                Plan plan = new Plan();
+                plan.setDescripcion("Descripcion plan 1");
+                plan.setPrecio(BigDecimal.valueOf(29999));
+                plan.setNombre("Wellness");
+                this.planRepository.save(plan);
+                System.out.println("Plan " + plan.getNombre() +  " creado correctamente.");
+            }catch (Exception ex){
+                System.err.println("Error al crear plan: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    public void crearTurnos(){
+        if(this.turnoRepository.findAll().size() == 0){
+            try{
+                Turno turno1 = new Turno();
+                turno1.setDiaSemana(DayOfWeek.MONDAY);
+                turno1.setHora(LocalTime.of(22,00));
+
+                Turno turno2 = new Turno();
+                turno2.setDiaSemana(DayOfWeek.TUESDAY);
+                turno2.setHora(LocalTime.of(22,00));
+
+                Turno turno3 = new Turno();
+                turno3.setDiaSemana(DayOfWeek.WEDNESDAY);
+                turno3.setHora(LocalTime.of(22,00));
+
+                Turno turno4 = new Turno();
+                turno4.setDiaSemana(DayOfWeek.THURSDAY);
+                turno4.setHora(LocalTime.of(22,00));
+
+                Turno turno5 = new Turno();
+                turno5.setDiaSemana(DayOfWeek.FRIDAY);
+                turno5.setHora(LocalTime.of(22,00));
+
+                this.turnoRepository.saveAll(Arrays.asList(turno1,turno2,turno3,turno4,turno5));
+
+                System.out.println("Turnos creados correctamente.");
+            }catch (Exception ex){
+                System.err.println("Error al crear turnos: " + ex.getMessage());
+                ex.printStackTrace();
+            }
         }
     }
 }

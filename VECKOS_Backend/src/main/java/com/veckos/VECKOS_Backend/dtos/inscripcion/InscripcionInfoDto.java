@@ -15,9 +15,11 @@ import java.util.stream.Collectors;
 public class InscripcionInfoDto {
 
     private Long id;
+    private Long usuarioId;
     private String nombreUsuario;
     private String apellidoUsuario;
     private String nombrePlan;
+    private Long planId;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
     private Integer frecuencia;
@@ -28,9 +30,11 @@ public class InscripcionInfoDto {
     // Constructor para convertir desde entidad
     public InscripcionInfoDto(Inscripcion inscripcion) {
         this.id = inscripcion.getId();
+        this.usuarioId = inscripcion.getUsuario().getId();
         this.nombreUsuario = inscripcion.getUsuario().getNombre();
         this.apellidoUsuario = inscripcion.getUsuario().getApellido();
         this.nombrePlan = inscripcion.getPlan().getNombre();
+        this.planId = inscripcion.getPlan().getId();
         this.fechaInicio = inscripcion.getFechaInicio();
         this.fechaFin = inscripcion.getFechaFin();
         this.frecuencia = inscripcion.getFrecuencia();

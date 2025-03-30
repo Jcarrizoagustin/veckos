@@ -1,5 +1,6 @@
 package com.veckos.VECKOS_Backend.dtos.usuario;
 
+import com.veckos.VECKOS_Backend.entities.Inscripcion;
 import com.veckos.VECKOS_Backend.entities.Usuario;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +19,7 @@ class UsuarioListItemDto {
     private String dni;
     private Integer edad;
     private String planActivo;
-    private Usuario.EstadoUsuario estado;
+    private Inscripcion.EstadoPago estado;
 
     // Constructor para convertir desde entidad
     public UsuarioListItemDto(Usuario usuario, String planActivo) {
@@ -33,6 +34,6 @@ class UsuarioListItemDto {
         }
 
         this.planActivo = planActivo;
-        this.estado = usuario.getEstado();
+        this.estado = usuario.obtenerEstado();
     }
 }

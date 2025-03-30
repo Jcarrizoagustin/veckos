@@ -1,9 +1,6 @@
 package com.veckos.VECKOS_Backend.services;
 
-import com.veckos.VECKOS_Backend.entities.DetalleInscripcion;
-import com.veckos.VECKOS_Backend.entities.Inscripcion;
-import com.veckos.VECKOS_Backend.entities.Plan;
-import com.veckos.VECKOS_Backend.entities.Usuario;
+import com.veckos.VECKOS_Backend.entities.*;
 import com.veckos.VECKOS_Backend.repositories.InscripcionRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,23 +48,27 @@ public class InscripcionService {
         return inscripcionRepository.findByUsuarioIdAndFechaFinGreaterThanEqual(usuarioId, LocalDate.now());
     }
 
-    @Transactional
+
     public Inscripcion save(Inscripcion inscripcion, Set<DetalleInscripcion> detalles) {
         // Verificar usuario y plan
-        Usuario usuario = usuarioService.findById(inscripcion.getUsuario().getId());
-        Plan plan = planService.findById(inscripcion.getPlan().getId());
+        //Usuario usuario = usuarioService.findById(inscripcion.getUsuario().getId());
+        //Plan plan = planService.findById(inscripcion.getPlan().getId());
+        //Usuario usuario = inscripcion.getUsuario();
+        //Plan plan = inscripcion.getPlan();
 
-        inscripcion.setUsuario(usuario);
-        inscripcion.setPlan(plan);
+        // Lo de abajo no va xq repite logica, los objetos ya estan seteados
+        //inscripcion.setUsuario(usuario);
+        //inscripcion.setPlan(plan);
 
         // Establecer fecha de inicio y fin
-        if (inscripcion.getFechaInicio() == null) {
+        //Lo de abajo no va xq las fechas ya vienen seteadas del controller
+        /*if (inscripcion.getFechaInicio() == null) {
             inscripcion.setFechaInicio(LocalDate.now());
         }
 
         if (inscripcion.getFechaFin() == null) {
             inscripcion.setFechaFin(inscripcion.getFechaInicio().plusMonths(1));
-        }
+        }*/
 
         // Validar frecuencia (3 o 5 días)
         if (inscripcion.getFrecuencia() != 3 && inscripcion.getFrecuencia() != 5) {
@@ -75,18 +76,19 @@ public class InscripcionService {
         }
 
         // Establecer estado de pago inicial
-        if (inscripcion.getEstadoPago() == null) {
+        //Lo de abajo no va xq el estado pago ya esta seteado como ACTIVO desde el controller
+        /*if (inscripcion.getEstadoPago() == null) {
             inscripcion.setEstadoPago(Inscripcion.EstadoPago.ACTIVO);
-        }
+        }*/
 
         // Guardar inscripción
-        Inscripcion savedInscripcion = inscripcionRepository.save(inscripcion);
+        //Inscripcion savedInscripcion = inscripcionRepository.save(inscripcion);
 
         // Agregar detalles
         if (detalles != null) {
             for (DetalleInscripcion detalle : detalles) {
-                detalle.setInscripcion(savedInscripcion);
-                savedInscripcion.addDetalle(detalle);
+                //detalle.setInscripcion(inscripcion);
+                inscripcion.addDetalle(detalle);
             }
 
             // Verificar que la cantidad de detalles coincida con la frecuencia
@@ -96,12 +98,14 @@ public class InscripcionService {
         }
 
         // Guardar con detalles
-        Inscripcion inscripcionConDetalles = inscripcionRepository.save(savedInscripcion);
+        Inscripcion inscripcionConDetalles = inscripcionRepository.save(inscripcion);
 
         // Generar clases para el período de inscripción
-        claseService.generarClasesParaInscripcion(inscripcionConDetalles);
+        List<Clase> clasesGeneradas = claseService.generarClasesParaInscripcion(inscripcionConDetalles);
 
         return inscripcionConDetalles;
+
+       // return null;
     }
 
     @Transactional

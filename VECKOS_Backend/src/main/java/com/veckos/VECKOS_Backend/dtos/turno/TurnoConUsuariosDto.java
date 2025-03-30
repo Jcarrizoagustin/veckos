@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-class TurnoConUsuariosDto {
+public class TurnoConUsuariosDto {
 
     private Long id;
     private DayOfWeek diaSemana;
@@ -23,12 +23,18 @@ class TurnoConUsuariosDto {
     private Integer cantidadUsuarios;
 
     // Constructor para convertir desde entidad
-    public TurnoConUsuariosDto(Turno turno, List<UsuarioInfoDto> usuarios) {
+    public TurnoConUsuariosDto(Turno turno) {
         this.id = turno.getId();
         this.diaSemana = turno.getDiaSemana();
         this.hora = turno.getHora();
         this.descripcion = turno.getDescripcion();
-        this.usuarios = usuarios;
+        this.usuarios = this.obtenerUsuarios(turno);
         this.cantidadUsuarios = usuarios.size();
+    }
+
+    private List<UsuarioInfoDto> obtenerUsuarios(Turno turno){
+        List<UsuarioInfoDto> response = turno.getDetallesInscripcion()
+                .stream().map(detalle -> new UsuarioInfoDto(detalle.getInscripcion().getUsuario())).toList();
+        return response;
     }
 }

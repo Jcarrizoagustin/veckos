@@ -1,6 +1,7 @@
 package com.veckos.VECKOS_Backend.controllers;
 
 import com.veckos.VECKOS_Backend.dtos.inscripcion.InscripcionCrearDto;
+import com.veckos.VECKOS_Backend.dtos.inscripcion.InscripcionInfoDto;
 import com.veckos.VECKOS_Backend.entities.DetalleInscripcion;
 import com.veckos.VECKOS_Backend.entities.Inscripcion;
 import com.veckos.VECKOS_Backend.entities.Plan;
@@ -40,28 +41,27 @@ public class InscripcionController {
     private TurnoService turnoService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
-    public ResponseEntity<List<Inscripcion>> getAllInscripciones() {
+    public ResponseEntity<List<InscripcionInfoDto>> getAllInscripciones() {
         List<Inscripcion> inscripciones = inscripcionService.findAll();
-        return ResponseEntity.ok(inscripciones);
+        List<InscripcionInfoDto> response = inscripciones.stream().map(InscripcionInfoDto::new).toList();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
-    public ResponseEntity<Inscripcion> getInscripcionById(@PathVariable Long id) {
+    public ResponseEntity<InscripcionInfoDto> getInscripcionById(@PathVariable Long id) {
         Inscripcion inscripcion = inscripcionService.findById(id);
-        return ResponseEntity.ok(inscripcion);
+        InscripcionInfoDto response = new InscripcionInfoDto(inscripcion);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/usuario/{usuarioId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
-    public ResponseEntity<List<Inscripcion>> getInscripcionesByUsuarioId(@PathVariable Long usuarioId) {
+    public ResponseEntity<List<InscripcionInfoDto>> getInscripcionesByUsuarioId(@PathVariable Long usuarioId) {
         List<Inscripcion> inscripciones = inscripcionService.findByUsuarioId(usuarioId);
-        return ResponseEntity.ok(inscripciones);
+        List<InscripcionInfoDto> response = inscripciones.stream().map(InscripcionInfoDto::new).toList();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/usuario/{usuarioId}/activa")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
     public ResponseEntity<?> getInscripcionActivaByUsuarioId(@PathVariable Long usuarioId) {
         return inscripcionService.findInscripcionActivaByUsuarioId(usuarioId)
                 .map(ResponseEntity::ok)
@@ -69,25 +69,25 @@ public class InscripcionController {
     }
 
     @GetMapping("/por-estado/{estado}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
-    public ResponseEntity<List<Inscripcion>> getInscripcionesByEstado(
+    public ResponseEntity<List<InscripcionInfoDto>> getInscripcionesByEstado(
             @PathVariable Inscripcion.EstadoPago estado) {
         List<Inscripcion> inscripciones = inscripcionService.findByEstadoPago(estado);
-        return ResponseEntity.ok(inscripciones);
+        List<InscripcionInfoDto> response = inscripciones.stream().map(InscripcionInfoDto::new).toList();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/por-vencimiento")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
-    public ResponseEntity<List<Inscripcion>> getInscripcionesPorVencimiento(
+    public ResponseEntity<List<InscripcionInfoDto>> getInscripcionesPorVencimiento(
             @RequestParam LocalDate fechaInicio,
             @RequestParam LocalDate fechaFin) {
         List<Inscripcion> inscripciones = inscripcionService.findByFechaFinBetween(fechaInicio, fechaFin);
-        return ResponseEntity.ok(inscripciones);
+        List<InscripcionInfoDto> response = inscripciones.stream().map(InscripcionInfoDto::new).toList();
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> createInscripcion(@Valid @RequestBody InscripcionCrearDto inscripcionDto) {
+    //@PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<InscripcionInfoDto> createInscripcion(@Valid @RequestBody InscripcionCrearDto inscripcionDto) {
         try {
             // Convertir DTO a entidad
             Inscripcion inscripcion = new Inscripcion();
@@ -110,7 +110,7 @@ public class InscripcionController {
             inscripcion.setFrecuencia(inscripcionDto.getFrecuencia());
 
             // Establecer estado de pago inicial
-            inscripcion.setEstadoPago(Inscripcion.EstadoPago.ACTIVO);
+            inscripcion.setEstadoPago(Inscripcion.EstadoPago.PENDIENTE);
 
             // Crear detalles de inscripción
             Set<DetalleInscripcion> detalles = new HashSet<>();
@@ -123,17 +123,18 @@ public class InscripcionController {
 
             // Guardar inscripción con detalles
             Inscripcion savedInscripcion = inscripcionService.save(inscripcion, detalles);
-            return new ResponseEntity<>(savedInscripcion, HttpStatus.CREATED);
+            InscripcionInfoDto response = new InscripcionInfoDto(savedInscripcion);
+
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(e.getMessage());
+                    .body(null);
         }
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateInscripcion(@PathVariable Long id, @RequestBody Inscripcion inscripcionDetails) {
         try {
             Inscripcion updatedInscripcion = inscripcionService.update(id, inscripcionDetails);
@@ -146,7 +147,6 @@ public class InscripcionController {
     }
 
     @PostMapping("/{id}/renovar")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> renovarInscripcion(@PathVariable Long id) {
         try {
             Inscripcion inscripcionRenovada = inscripcionService.renovarInscripcion(id);
@@ -159,7 +159,6 @@ public class InscripcionController {
     }
 
     @PostMapping("/{id}/renovar-con-cambios")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> renovarInscripcionConCambios(
             @PathVariable Long id,
             @RequestBody InscripcionCrearDto inscripcionDto) {
@@ -209,14 +208,12 @@ public class InscripcionController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteInscripcion(@PathVariable Long id) {
         inscripcionService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/actualizar-estados")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
     public ResponseEntity<Void> actualizarEstadosPagos() {
         inscripcionService.actualizarEstadosPagos();
         return ResponseEntity.ok().build();

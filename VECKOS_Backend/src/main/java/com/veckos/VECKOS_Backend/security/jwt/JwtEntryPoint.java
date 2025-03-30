@@ -26,16 +26,18 @@ public class JwtEntryPoint implements AuthenticationEntryPoint {
 
         logger.error("Error de autenticación: {}", authException.getMessage());
 
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        if(!response.isCommitted()){
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
-        body.put("error", "No autorizado");
-        body.put("message", authException.getMessage());
-        body.put("path", request.getServletPath());
+            Map<String, Object> body = new HashMap<>();
+            body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
+            body.put("error", "No autorizado");
+            body.put("message", authException.getMessage());
+            body.put("path", request.getServletPath());
 
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(response.getOutputStream(), body);
+            final ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(response.getOutputStream(), body);
+        }
     }
 }

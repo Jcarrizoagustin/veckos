@@ -1,4 +1,5 @@
 package com.veckos.VECKOS_Backend.dtos.usuario;
+import com.veckos.VECKOS_Backend.entities.Inscripcion;
 import com.veckos.VECKOS_Backend.entities.Usuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -37,5 +38,5 @@ public class UsuarioDto {
     @Email(message = "El formato del correo electrónico no es válido")
     private String correo;
 
-    private Usuario.EstadoUsuario estado;
+    private Inscripcion.EstadoPago estado;
 }

@@ -1,6 +1,7 @@
 package com.veckos.VECKOS_Backend.controllers;
 
 import com.veckos.VECKOS_Backend.dtos.pago.PagoCrearDto;
+import com.veckos.VECKOS_Backend.dtos.pago.PagoInfoDto;
 import com.veckos.VECKOS_Backend.entities.Pago;
 import com.veckos.VECKOS_Backend.services.InscripcionService;
 import com.veckos.VECKOS_Backend.services.PagoService;
@@ -28,45 +29,44 @@ public class PagoController {
     private InscripcionService inscripcionService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Pago>> getAllPagos() {
+    public ResponseEntity<List<PagoInfoDto>> getAllPagos() {
         List<Pago> pagos = pagoService.findAll();
-        return ResponseEntity.ok(pagos);
+        List<PagoInfoDto> response = pagos.stream().map(PagoInfoDto::new).toList();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Pago> getPagoById(@PathVariable Long id) {
+    public ResponseEntity<PagoInfoDto> getPagoById(@PathVariable Long id) {
         Pago pago = pagoService.findById(id);
-        return ResponseEntity.ok(pago);
+        PagoInfoDto response = new PagoInfoDto(pago);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/inscripcion/{inscripcionId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
-    public ResponseEntity<List<Pago>> getPagosByInscripcionId(@PathVariable Long inscripcionId) {
+    public ResponseEntity<List<PagoInfoDto>> getPagosByInscripcionId(@PathVariable Long inscripcionId) {
         List<Pago> pagos = pagoService.findByInscripcionId(inscripcionId);
-        return ResponseEntity.ok(pagos);
+        List<PagoInfoDto> response = pagos.stream().map(PagoInfoDto::new).toList();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/usuario/{usuarioId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
-    public ResponseEntity<List<Pago>> getPagosByUsuarioId(@PathVariable Long usuarioId) {
+    public ResponseEntity<List<PagoInfoDto>> getPagosByUsuarioId(@PathVariable Long usuarioId) {
         List<Pago> pagos = pagoService.findByUsuarioId(usuarioId);
-        return ResponseEntity.ok(pagos);
+        List<PagoInfoDto> response = pagos.stream().map(PagoInfoDto::new).toList();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/periodo")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Pago>> getPagosByPeriodo(
+    public ResponseEntity<List<PagoInfoDto>> getPagosByPeriodo(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
         List<Pago> pagos = pagoService.findByFechaPagoBetween(fechaInicio, fechaFin);
-        return ResponseEntity.ok(pagos);
+        List<PagoInfoDto> response = pagos.stream().map(PagoInfoDto::new).toList();
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Pago> registrarPago(@Valid @RequestBody PagoCrearDto pagoDto) {
+    public ResponseEntity<PagoInfoDto> registrarPago(@Valid @RequestBody PagoCrearDto pagoDto) {
         // Validar que exista la inscripción
         inscripcionService.findById(pagoDto.getInscripcionId());
 
@@ -79,12 +79,12 @@ public class PagoController {
 
         // Registrar el pago
         Pago registrado = pagoService.registrarPago(pagoDto.getInscripcionId(), pago);
-        return new ResponseEntity<>(registrado, HttpStatus.CREATED);
+        PagoInfoDto response = new PagoInfoDto(registrado);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Pago> updatePago(
+    public ResponseEntity<PagoInfoDto> updatePago(
             @PathVariable Long id,
             @Valid @RequestBody PagoCrearDto pagoDto) {
 
@@ -96,18 +96,17 @@ public class PagoController {
         pago.setDescripcion(pagoDto.getDescripcion());
 
         Pago updatedPago = pagoService.update(id, pago);
-        return ResponseEntity.ok(updatedPago);
+        PagoInfoDto response = new PagoInfoDto(updatedPago);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deletePago(@PathVariable Long id) {
         pagoService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/estadisticas/periodo/suma")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BigDecimal> getSumaPagosPeriodo(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
@@ -116,7 +115,6 @@ public class PagoController {
     }
 
     @GetMapping("/estadisticas/periodo/metodo-pago")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Object[]>> getEstadisticasPorMetodoPago(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
@@ -125,7 +123,6 @@ public class PagoController {
     }
 
     @GetMapping("/estadisticas/periodo/mensual")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Object[]>> getEstadisticasMensuales(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {

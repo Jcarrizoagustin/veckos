@@ -21,8 +21,8 @@ public interface ClaseRepository extends JpaRepository<Clase, Long> {
 
     @Query("SELECT c FROM Clase c " +
             "JOIN c.turno t " +
-            "WHERE t.diaSemana = FUNCTION('dayofweek', :fecha) " +
-            "AND c.fecha = :fecha " +
+            //"WHERE t.diaSemana = FUNCTION('dayofweek', :fecha) " +
+            "WHERE c.fecha = :fecha " +
             "ORDER BY t.hora ASC")
     List<Clase> findByFechaOrderByHora(@Param("fecha") LocalDate fecha);
 

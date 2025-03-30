@@ -23,7 +23,7 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-    @Transactional(readOnly = true)
+    //@Transactional(readOnly = true)
     public Usuario findById(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + id));
@@ -38,9 +38,6 @@ public class UsuarioService {
     public Usuario save(Usuario usuario) {
         if (usuario.getId() == null) {
             usuario.setFechaAlta(LocalDateTime.now());
-            if (usuario.getEstado() == null) {
-                usuario.setEstado(Usuario.EstadoUsuario.ACTIVO);
-            }
         }
         return usuarioRepository.save(usuario);
     }
@@ -54,7 +51,7 @@ public class UsuarioService {
         usuario.setFechaNacimiento(usuarioDetails.getFechaNacimiento());
         usuario.setTelefono(usuarioDetails.getTelefono());
         usuario.setCorreo(usuarioDetails.getCorreo());
-        usuario.setEstado(usuarioDetails.getEstado());
+        //usuario.setEstado(usuarioDetails.getEstado());
 
         // No actualizamos DNI ni CUIL para evitar problemas de integridad
 
@@ -64,14 +61,26 @@ public class UsuarioService {
     @Transactional
     public void deleteById(Long id) {
         Usuario usuario = findById(id);
-        usuario.setEstado(Usuario.EstadoUsuario.INACTIVO);
+        //usuario.setEstado(Usuario.EstadoUsuario.INACTIVO);
         usuarioRepository.save(usuario);
         // No eliminamos físicamente para mantener la integridad de los datos
     }
 
-    @Transactional(readOnly = true)
+    /*@Transactional(readOnly = true)
     public List<Usuario> findByEstado(Usuario.EstadoUsuario estado) {
         return usuarioRepository.findByEstado(estado);
+    }*/
+
+    @Transactional(readOnly = true)
+    public List<Usuario> buscarUsuariosActivos(){
+        return usuarioRepository.findUsuariosActivos();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Usuario> buscarUsuariosPendientes(){
+        return usuarioRepository.findAll().stream()
+                .filter(usuario -> usuario.getInscripciones().size() == 0)
+                .toList();
     }
 
     @Transactional(readOnly = true)

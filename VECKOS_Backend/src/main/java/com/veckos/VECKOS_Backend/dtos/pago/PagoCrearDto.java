@@ -27,7 +27,7 @@ public class PagoCrearDto {
 
     private LocalDate fechaPago;
 
-    @NotNull(message = "El método de pago es obligatorio")
+    //@NotNull(message = "El método de pago es obligatorio")
     private Pago.MetodoPago metodoPago;
 
     private String descripcion;

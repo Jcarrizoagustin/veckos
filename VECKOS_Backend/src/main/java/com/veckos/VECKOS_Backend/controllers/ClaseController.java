@@ -1,6 +1,7 @@
 package com.veckos.VECKOS_Backend.controllers;
 
 import com.veckos.VECKOS_Backend.dtos.clase.ClaseDto;
+import com.veckos.VECKOS_Backend.dtos.clase.ClaseInfoDto;
 import com.veckos.VECKOS_Backend.entities.Clase;
 import com.veckos.VECKOS_Backend.services.ClaseService;
 import com.veckos.VECKOS_Backend.services.TurnoService;
@@ -28,45 +29,41 @@ public class ClaseController {
     private TurnoService turnoService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
-    public ResponseEntity<List<ClaseDto>> getAllClases() {
+    public ResponseEntity<List<ClaseInfoDto>> getAllClases() {
         List<Clase> clases = claseService.findAll();
-        List<ClaseDto> clasesDto = clases.stream()
-                .map(this::convertToDto)
+        List<ClaseInfoDto> clasesDto = clases.stream()
+                .map(ClaseInfoDto::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(clasesDto);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
-    public ResponseEntity<ClaseDto> getClaseById(@PathVariable Long id) {
+    public ResponseEntity<ClaseInfoDto> getClaseById(@PathVariable Long id) {
         Clase clase = claseService.findById(id);
-        return ResponseEntity.ok(convertToDto(clase));
+        ClaseInfoDto response = new ClaseInfoDto(clase);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/turno/{turnoId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
-    public ResponseEntity<List<ClaseDto>> getClasesByTurnoId(@PathVariable Long turnoId) {
+    public ResponseEntity<List<ClaseInfoDto>> getClasesByTurnoId(@PathVariable Long turnoId) {
         List<Clase> clases = claseService.findByTurnoId(turnoId);
-        List<ClaseDto> clasesDto = clases.stream()
-                .map(this::convertToDto)
+        List<ClaseInfoDto> clasesDto = clases.stream()
+                .map(ClaseInfoDto::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(clasesDto);
     }
 
     @GetMapping("/fecha")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
-    public ResponseEntity<List<ClaseDto>> getClasesByFecha(
+    public ResponseEntity<List<ClaseInfoDto>> getClasesByFecha(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
         List<Clase> clases = claseService.findByFechaOrderByHora(fecha);
-        List<ClaseDto> clasesDto = clases.stream()
-                .map(this::convertToDto)
+        List<ClaseInfoDto> clasesDto = clases.stream()
+                .map(ClaseInfoDto::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(clasesDto);
     }
 
     @GetMapping("/periodo")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
     public ResponseEntity<List<ClaseDto>> getClasesByPeriodo(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
@@ -78,7 +75,6 @@ public class ClaseController {
     }
 
     @GetMapping("/usuario/{usuarioId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
     public ResponseEntity<List<ClaseDto>> getClasesWithAsistenciaByUsuarioId(
             @PathVariable Long usuarioId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
@@ -92,7 +88,6 @@ public class ClaseController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createClase(@Valid @RequestBody ClaseDto claseDto) {
         try {
             Clase clase = convertToEntity(claseDto);
@@ -106,7 +101,6 @@ public class ClaseController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ClaseDto> updateClase(
             @PathVariable Long id,
             @Valid @RequestBody ClaseDto claseDto) {
@@ -117,7 +111,6 @@ public class ClaseController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteClase(@PathVariable Long id) {
         try {
             claseService.deleteById(id);
@@ -130,7 +123,6 @@ public class ClaseController {
     }
 
     @GetMapping("/estadisticas/periodo")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Long> getEstadisticasAsistenciasPeriodo(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {

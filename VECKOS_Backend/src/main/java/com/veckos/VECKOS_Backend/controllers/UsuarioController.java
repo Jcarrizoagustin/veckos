@@ -1,5 +1,7 @@
 package com.veckos.VECKOS_Backend.controllers;
 
+import com.veckos.VECKOS_Backend.dtos.inscripcion.InscripcionInfoDto;
+import com.veckos.VECKOS_Backend.dtos.usuario.UsuarioDetalleDto;
 import com.veckos.VECKOS_Backend.dtos.usuario.UsuarioDto;
 import com.veckos.VECKOS_Backend.entities.Usuario;
 import com.veckos.VECKOS_Backend.services.UsuarioService;
@@ -22,7 +24,6 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
     public ResponseEntity<List<UsuarioDto>> getAllUsuarios() {
         List<Usuario> usuarios = usuarioService.findAll();
         List<UsuarioDto> usuariosDto = usuarios.stream()
@@ -32,9 +33,17 @@ public class UsuarioController {
     }
 
     @GetMapping("/activos")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
     public ResponseEntity<List<UsuarioDto>> getUsuariosActivos() {
-        List<Usuario> usuarios = usuarioService.findByEstado(Usuario.EstadoUsuario.ACTIVO);
+        List<Usuario> usuarios = usuarioService.buscarUsuariosActivos();
+        List<UsuarioDto> usuariosDto = usuarios.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(usuariosDto);
+    }
+
+    @GetMapping("/pendientes")
+    public ResponseEntity<List<UsuarioDto>> getUsuariosPendientes() {
+        List<Usuario> usuarios = usuarioService.buscarUsuariosPendientes();
         List<UsuarioDto> usuariosDto = usuarios.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -42,14 +51,21 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
-    public ResponseEntity<UsuarioDto> getUsuarioById(@PathVariable Long id) {
+    public ResponseEntity<UsuarioDetalleDto> getUsuarioById(@PathVariable Long id) {
         Usuario usuario = usuarioService.findById(id);
-        return ResponseEntity.ok(convertToDto(usuario));
+        if(usuario.getInscripciones().size() > 0){
+            InscripcionInfoDto inscripcionInfoDto = new InscripcionInfoDto(usuario.getInscripciones().get(0));
+            UsuarioDetalleDto response = new UsuarioDetalleDto(usuario,inscripcionInfoDto);
+            return ResponseEntity.ok(response);
+        }else{
+            UsuarioDetalleDto response = new UsuarioDetalleDto(usuario,null);
+            return ResponseEntity.ok(response);
+        }
+
+
     }
 
     @GetMapping("/buscar")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
     public ResponseEntity<List<UsuarioDto>> buscarUsuarios(@RequestParam String termino) {
         List<Usuario> usuarios = usuarioService.buscarPorTermino(termino);
         List<UsuarioDto> usuariosDto = usuarios.stream()
@@ -59,7 +75,6 @@ public class UsuarioController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UsuarioDto> createUsuario(@Valid @RequestBody UsuarioDto usuarioDto) {
         // Verificar si ya existe un usuario con el mismo DNI
         if (usuarioService.existsByDni(usuarioDto.getDni())) {
@@ -72,7 +87,6 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UsuarioDto> updateUsuario(
             @PathVariable Long id,
             @Valid @RequestBody UsuarioDto usuarioDto) {
@@ -83,7 +97,6 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
         usuarioService.deleteById(id);
         return ResponseEntity.noContent().build();
@@ -102,7 +115,7 @@ public class UsuarioController {
         dto.setCuil(usuario.getCuil());
         dto.setTelefono(usuario.getTelefono());
         dto.setCorreo(usuario.getCorreo());
-        dto.setEstado(usuario.getEstado());
+        dto.setEstado(usuario.obtenerEstado());
         return dto;
     }
 
@@ -119,7 +132,7 @@ public class UsuarioController {
         usuario.setCuil(usuarioDto.getCuil());
         usuario.setTelefono(usuarioDto.getTelefono());
         usuario.setCorreo(usuarioDto.getCorreo());
-        usuario.setEstado(usuarioDto.getEstado());
+        //usuario.setEstado(usuarioDto.getEstado());
         return usuario;
     }
 }

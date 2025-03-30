@@ -1,5 +1,6 @@
 package com.veckos.VECKOS_Backend.dtos.usuario;
 import com.veckos.VECKOS_Backend.dtos.inscripcion.InscripcionInfoDto;
+import com.veckos.VECKOS_Backend.entities.Inscripcion;
 import com.veckos.VECKOS_Backend.entities.Usuario;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-class UsuarioDetalleDto {
+public class UsuarioDetalleDto {
 
     private Long id;
     private String nombre;
@@ -20,7 +21,7 @@ class UsuarioDetalleDto {
     private String cuil;
     private String telefono;
     private String correo;
-    private Usuario.EstadoUsuario estado;
+    private Inscripcion.EstadoPago estado;
     private LocalDateTime fechaAlta;
     private InscripcionInfoDto inscripcionActiva;
 
@@ -38,7 +39,7 @@ class UsuarioDetalleDto {
         this.cuil = usuario.getCuil();
         this.telefono = usuario.getTelefono();
         this.correo = usuario.getCorreo();
-        this.estado = usuario.getEstado();
+        this.estado = usuario.obtenerEstado();
         this.fechaAlta = usuario.getFechaAlta();
         this.inscripcionActiva = inscripcionActiva;
 

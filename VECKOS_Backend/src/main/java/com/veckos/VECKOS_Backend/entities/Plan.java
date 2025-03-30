@@ -29,6 +29,6 @@ public class Plan {
     @Column
     private String descripcion;
 
-    @OneToMany(mappedBy = "plan")
+    @OneToMany(mappedBy = "plan",fetch = FetchType.LAZY)
     private List<Inscripcion> inscripciones = new ArrayList<>();
 }

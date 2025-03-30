@@ -1,5 +1,6 @@
 package com.veckos.VECKOS_Backend.dtos.usuario;
 
+import com.veckos.VECKOS_Backend.entities.Inscripcion;
 import com.veckos.VECKOS_Backend.entities.Usuario;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class UsuarioInfoDto {
     private String dni;
     private String telefono;
     private LocalDate fechaNacimiento;
-    private Usuario.EstadoUsuario estado;
+    private Inscripcion.EstadoPago estado;
     private LocalDateTime fechaAlta;
 
     // Constructor para convertir desde entidad
@@ -30,7 +31,7 @@ public class UsuarioInfoDto {
         this.dni = usuario.getDni();
         this.telefono = usuario.getTelefono();
         this.fechaNacimiento = usuario.getFechaNacimiento();
-        this.estado = usuario.getEstado();
+        this.estado = usuario.obtenerEstado();
         this.fechaAlta = usuario.getFechaAlta();
     }
 }

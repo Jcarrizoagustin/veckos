@@ -41,7 +41,7 @@ public class ClaseService {
         return claseRepository.findByTurnoId(turnoId);
     }
 
-    @Transactional(readOnly = true)
+    //@Transactional(readOnly = true)
     public Optional<Clase> findByTurnoIdAndFecha(Long turnoId, LocalDate fecha) {
         return claseRepository.findByTurnoIdAndFecha(turnoId, fecha);
     }
@@ -92,7 +92,7 @@ public class ClaseService {
         return claseRepository.findByFechaOrderByHora(fecha);
     }
 
-    @Transactional
+    //@Transactional
     public List<Clase> generarClasesParaInscripcion(Inscripcion inscripcion) {
         List<Clase> clasesGeneradas = new ArrayList<>();
 

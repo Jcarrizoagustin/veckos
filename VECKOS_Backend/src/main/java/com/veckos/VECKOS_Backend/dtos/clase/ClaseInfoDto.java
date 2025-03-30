@@ -15,7 +15,7 @@ import java.time.LocalTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-class ClaseInfoDto {
+public class ClaseInfoDto {
 
     private Long id;
     private Long turnoId;
@@ -36,7 +36,7 @@ class ClaseInfoDto {
         this.descripcion = clase.getDescripcion();
 
         if (clase.getAsistencias() != null) {
-            this.cantidadAsistencias = clase.getAsistencias().size();
+            this.cantidadAsistencias = clase.getTurno().getDetallesInscripcion().size();
             this.cantidadPresentes = (int) clase.getAsistencias().stream()
                     .filter(a -> a.getPresente())
                     .count();

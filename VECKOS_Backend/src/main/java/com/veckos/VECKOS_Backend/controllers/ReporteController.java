@@ -40,7 +40,6 @@ public class ReporteController {
     private PagoService pagoService;
 
     @PostMapping("/asistencia")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
     public ResponseEntity<?> generarReporteAsistencia(@RequestBody ReporteAsistenciaRequestDto requestDto) {
         Map<String, Object> reporte = new HashMap<>();
 
@@ -119,7 +118,6 @@ public class ReporteController {
     }
 
     @GetMapping("/financiero")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> generarReporteFinanciero(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
@@ -169,7 +167,6 @@ public class ReporteController {
     }
 
     @GetMapping("/inscripciones")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> generarReporteInscripciones(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
@@ -203,7 +200,6 @@ public class ReporteController {
     }
 
     @GetMapping("/dashboard/stats")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
     public ResponseEntity<?> getDashboardStats() {
         Map<String, Object> stats = new HashMap<>();
         LocalDate hoy = LocalDate.now();

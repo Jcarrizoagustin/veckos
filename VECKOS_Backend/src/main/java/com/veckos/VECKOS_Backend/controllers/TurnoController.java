@@ -1,6 +1,8 @@
 package com.veckos.VECKOS_Backend.controllers;
 
+import com.veckos.VECKOS_Backend.dtos.turno.TurnoConUsuariosDto;
 import com.veckos.VECKOS_Backend.dtos.turno.TurnoDto;
+import com.veckos.VECKOS_Backend.dtos.usuario.UsuarioInfoDto;
 import com.veckos.VECKOS_Backend.entities.Turno;
 import com.veckos.VECKOS_Backend.services.TurnoService;
 import jakarta.validation.Valid;
@@ -23,7 +25,6 @@ public class TurnoController {
     private TurnoService turnoService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
     public ResponseEntity<List<TurnoDto>> getAllTurnos() {
         List<Turno> turnos = turnoService.findAll();
         List<TurnoDto> turnosDto = turnos.stream()
@@ -33,14 +34,12 @@ public class TurnoController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
     public ResponseEntity<TurnoDto> getTurnoById(@PathVariable Long id) {
         Turno turno = turnoService.findById(id);
         return ResponseEntity.ok(convertToDto(turno));
     }
 
     @GetMapping("/por-dia/{diaSemana}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
     public ResponseEntity<List<TurnoDto>> getTurnosByDiaSemana(@PathVariable DayOfWeek diaSemana) {
         List<Turno> turnos = turnoService.findByDiaSemanaOrderByHoraAsc(diaSemana);
         List<TurnoDto> turnosDto = turnos.stream()
@@ -50,17 +49,13 @@ public class TurnoController {
     }
 
     @GetMapping("/con-usuarios/{diaSemana}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('OPERADOR')")
-    public ResponseEntity<List<TurnoDto>> getTurnosConUsuariosByDiaSemana(@PathVariable DayOfWeek diaSemana) {
+    public ResponseEntity<List<TurnoConUsuariosDto>> getTurnosConUsuariosByDiaSemana(@PathVariable DayOfWeek diaSemana) {
         List<Turno> turnos = turnoService.findTurnosByDiaSemanaConUsuarios(diaSemana);
-        List<TurnoDto> turnosDto = turnos.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(turnosDto);
+        List<TurnoConUsuariosDto> response = turnos.stream().map(TurnoConUsuariosDto::new).toList();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/por-ocupacion")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<TurnoDto>> getTurnosByOcupacion() {
         List<Turno> turnos = turnoService.findAllOrderByOcupacion();
         List<TurnoDto> turnosDto = turnos.stream()
@@ -70,7 +65,6 @@ public class TurnoController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createTurno(@Valid @RequestBody TurnoDto turnoDto) {
         try {
             Turno turno = convertToEntity(turnoDto);
@@ -85,7 +79,6 @@ public class TurnoController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateTurno(
             @PathVariable Long id,
             @Valid @RequestBody TurnoDto turnoDto) {
@@ -103,7 +96,6 @@ public class TurnoController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteTurno(@PathVariable Long id) {
         try {
             turnoService.deleteById(id);

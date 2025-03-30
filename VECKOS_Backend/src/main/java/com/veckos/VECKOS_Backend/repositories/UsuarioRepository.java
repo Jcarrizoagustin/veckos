@@ -19,7 +19,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     boolean existsByCuil(String cuil);
 
-    List<Usuario> findByEstado(Usuario.EstadoUsuario estado);
+    //List<Usuario> findByEstado(Usuario.EstadoUsuario estado);
 
     @Query("SELECT u FROM Usuario u WHERE LOWER(u.nombre) LIKE LOWER(CONCAT('%', :termino, '%')) " +
             "OR LOWER(u.apellido) LIKE LOWER(CONCAT('%', :termino, '%')) " +
@@ -33,4 +33,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
             "AND i.fechaFin BETWEEN :fechaInicio AND :fechaFin")
     List<Usuario> findConPagoProximoAVencer(@Param("fechaInicio") LocalDate fechaInicio,
                                             @Param("fechaFin") LocalDate fechaFin);
+
+    @Query("SELECT u FROM Usuario u JOIN u.inscripciones i WHERE i.estadoPago = 'ACTIVO' ")
+    List<Usuario> findUsuariosActivos();
+
+    //@Query("SELECT u FROM Usuario u JOIN u.inscripciones i WHERE i.usuario is NULL ")
+    //List<Usuario> findUsuariosWhere();
 }

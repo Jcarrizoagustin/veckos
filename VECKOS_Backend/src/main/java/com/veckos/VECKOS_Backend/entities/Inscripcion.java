@@ -55,7 +55,7 @@ public class Inscripcion {
         ACTIVO,              // Verde
         INACTIVO,            // Rojo
         PROXIMO_A_VENCER,    // Amarillo
-        RESERVADO            // Azul
+        PENDIENTE            // Azul
     }
 
     // Métodos helper para relaciones bidireccionales
