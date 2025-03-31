@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -45,7 +47,7 @@ public class UsuarioDetalleDto {
 
         // Calcular edad
         if (usuario.getFechaNacimiento() != null) {
-            this.edad = LocalDate.now().getYear() - usuario.getFechaNacimiento().getYear();
+            this.edad = Period.between(usuario.getFechaNacimiento(), LocalDate.now()).getYears();
         }
 
         this.tieneInscripcionActiva = inscripcionActiva != null;
