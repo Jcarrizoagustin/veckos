@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -14,14 +15,14 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-class ReporteAsistenciaIndividualDto {
+public class ReporteAsistenciaIndividualDto {
 
     private Long usuarioId;
     private String nombreCompleto;
-    private LocalDate fechaInicio;
-    private LocalDate fechaFin;
+    private LocalDateTime fechaInicio;
+    private LocalDateTime fechaFin;
     private Integer totalClasesProgramadas;
-    private Integer totalAsistencias;
+    private Long totalAsistencias;
     private Double porcentajeAsistencia;
     private List<AsistenciaInfoDto> asistencias;
 }

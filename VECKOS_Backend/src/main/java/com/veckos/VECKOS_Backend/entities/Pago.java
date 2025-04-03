@@ -36,6 +36,10 @@ public class Pago {
     @Column
     private String descripcion;
 
+    @ManyToOne
+    @JoinColumn(name = "cuenta_id", nullable = true)
+    private Cuenta cuenta;
+
     // Enum para el método de pago
     public enum MetodoPago {
         EFECTIVO,

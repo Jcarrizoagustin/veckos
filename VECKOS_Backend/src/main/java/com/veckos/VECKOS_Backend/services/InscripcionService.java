@@ -180,7 +180,7 @@ public class InscripcionService {
 
     @Transactional(readOnly = true)
     public List<Inscripcion> findByFechaFinBetween(LocalDate fechaInicio, LocalDate fechaFin) {
-        return inscripcionRepository.findByFechaFinBetween(fechaInicio, fechaFin);
+        return inscripcionRepository.findByFechaFinBetween(fechaInicio.minusDays(1), fechaFin.plusDays(1));
     }
 
     @Transactional

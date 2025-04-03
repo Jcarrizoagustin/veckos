@@ -1,20 +1,25 @@
 package com.veckos.VECKOS_Backend.controllers;
 
+import com.veckos.VECKOS_Backend.dtos.asistencia.AsistenciaInfoDto;
+import com.veckos.VECKOS_Backend.dtos.reporte.ReporteAsistenciaGeneralDto;
+import com.veckos.VECKOS_Backend.dtos.reporte.ReporteAsistenciaIndividualDto;
 import com.veckos.VECKOS_Backend.dtos.reporte.ReporteAsistenciaRequestDto;
+import com.veckos.VECKOS_Backend.dtos.reporte.ReporteFinancieroDto;
 import com.veckos.VECKOS_Backend.entities.Asistencia;
 import com.veckos.VECKOS_Backend.entities.Clase;
 import com.veckos.VECKOS_Backend.entities.Inscripcion;
 import com.veckos.VECKOS_Backend.entities.Pago;
-import com.veckos.VECKOS_Backend.services.AsistenciaService;
-import com.veckos.VECKOS_Backend.services.ClaseService;
-import com.veckos.VECKOS_Backend.services.InscripcionService;
-import com.veckos.VECKOS_Backend.services.PagoService;
+import com.veckos.VECKOS_Backend.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -39,131 +44,52 @@ public class ReporteController {
     @Autowired
     private PagoService pagoService;
 
+    @Autowired
+    private ReporteService reporteService;
+
+    @Autowired
+    private ExcelExportService excelExportService;
+
     @PostMapping("/asistencia")
     public ResponseEntity<?> generarReporteAsistencia(@RequestBody ReporteAsistenciaRequestDto requestDto) {
-        Map<String, Object> reporte = new HashMap<>();
-
-        // Datos básicos del reporte
-        reporte.put("fechaInicio", requestDto.getFechaInicio());
-        reporte.put("fechaFin", requestDto.getFechaFin());
-
-        // Si es para un usuario específico
-        if (requestDto.getUsuarioId() != null) {
-            // Obtener asistencias del usuario en el período
-            List<Asistencia> asistencias = asistenciaService.findByUsuarioIdAndFechaBetween(
-                    requestDto.getUsuarioId(),
-                    requestDto.getFechaInicio(),
-                    requestDto.getFechaFin());
-
-            // Filtrar por presentes si se solicita
-            if (requestDto.getIncluirSoloPresentes()) {
-                asistencias = asistencias.stream()
-                        .filter(Asistencia::getPresente)
-                        .collect(Collectors.toList());
-            }
-
-            // Calcular estadísticas
-            Long totalAsistencias = asistenciaService.countAsistenciasByUsuarioIdAndFechaBetween(
-                    requestDto.getUsuarioId(),
-                    requestDto.getFechaInicio(),
-                    requestDto.getFechaFin());
-
-            // Obtener clases programadas para el usuario
-            List<Clase> clasesUsuario = claseService.findClasesWithAsistenciaByUsuarioIdAndFechaBetween(
-                    requestDto.getUsuarioId(),
-                    requestDto.getFechaInicio(),
-                    requestDto.getFechaFin());
-
-            // Añadir datos al reporte
-            reporte.put("usuarioId", requestDto.getUsuarioId());
-            reporte.put("totalClasesProgramadas", clasesUsuario.size());
-            reporte.put("totalAsistencias", totalAsistencias);
-
-            // Calcular porcentaje de asistencia si hay clases programadas
-            if (clasesUsuario.size() > 0) {
-                double porcentaje = (totalAsistencias.doubleValue() / clasesUsuario.size()) * 100;
-                reporte.put("porcentajeAsistencia", porcentaje);
-            } else {
-                reporte.put("porcentajeAsistencia", 0.0);
-            }
-
-            // Incluir lista de asistencias
-            reporte.put("asistencias", asistencias);
-
-        } else {
-            // Reporte general
-            // Obtener todos los usuarios con asistencias en el período
-            List<Object[]> ranking = asistenciaService.findUsuariosConMayorAsistenciaEnPeriodo(
-                    requestDto.getFechaInicio(),
-                    requestDto.getFechaFin());
-
-            // Obtener total de asistencias en el período
-            Long totalAsistencias = claseService.countAsistenciasTotalesEnPeriodo(
-                    requestDto.getFechaInicio(),
-                    requestDto.getFechaFin());
-
-            // Añadir datos al reporte
-            reporte.put("rankingUsuarios", ranking);
-            reporte.put("totalAsistencias", totalAsistencias);
-
-            // Si se solicita agrupación por día
-            if (requestDto.getAgruparPorDia()) {
-                // Implementar agrupación por día
-                // Esta lógica debería estar en un servicio específico
-                reporte.put("asistenciasPorDia", "Datos agrupados por día");
-            }
+        if(requestDto.getUsuarioId()!=null){
+            ReporteAsistenciaIndividualDto reporte = reporteService.generarReporteAsistenciaIndividual(requestDto);
+            return ResponseEntity.ok(reporte);
+        }else{
+            ReporteAsistenciaGeneralDto reporte = reporteService.generarReporteAsistenciaGeneral(requestDto);
+            return ResponseEntity.ok(reporte);
         }
-
-        return ResponseEntity.ok(reporte);
     }
 
     @GetMapping("/financiero")
-    public ResponseEntity<?> generarReporteFinanciero(
+    public ResponseEntity<ReporteFinancieroDto> generarReporteFinanciero(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin,
             @RequestParam(required = false, defaultValue = "false") Boolean agruparPorMes,
             @RequestParam(required = false, defaultValue = "false") Boolean agruparPorMetodoPago) {
 
-        Map<String, Object> reporte = new HashMap<>();
-
-        // Datos básicos del reporte
-        reporte.put("fechaInicio", fechaInicio);
-        reporte.put("fechaFin", fechaFin);
-
-        // Obtener pagos en el período
-        List<Pago> pagos = pagoService.findByFechaPagoBetween(fechaInicio, fechaFin);
-
-        // Calcular suma total
-        BigDecimal total = pagoService.sumMontoByFechaPagoBetween(fechaInicio, fechaFin);
-
-        // Añadir datos al reporte
-        reporte.put("cantidadPagos", pagos.size());
-        reporte.put("ingresoTotal", total);
-
-        // Calcular promedio si hay pagos
-        if (pagos.size() > 0) {
-            BigDecimal promedio = total.divide(BigDecimal.valueOf(pagos.size()), 2, BigDecimal.ROUND_HALF_UP);
-            reporte.put("montoPromedio", promedio);
-        } else {
-            reporte.put("montoPromedio", BigDecimal.ZERO);
-        }
-
-        // Agrupar por mes si se solicita
-        if (agruparPorMes) {
-            List<Object[]> ingresosPorMes = pagoService.sumMontoByMesAndAnio(fechaInicio, fechaFin);
-            reporte.put("ingresosPorMes", ingresosPorMes);
-        }
-
-        // Agrupar por método de pago si se solicita
-        if (agruparPorMetodoPago) {
-            List<Object[]> ingresosPorMetodo = pagoService.countPagosByMetodoPagoAndFechaPagoBetween(fechaInicio, fechaFin);
-            reporte.put("ingresosPorMetodoPago", ingresosPorMetodo);
-        }
-
-        // Incluir lista de pagos
-        reporte.put("pagos", pagos);
+        ReporteFinancieroDto reporte = reporteService.generarReporteFinanciero(fechaInicio, fechaFin, agruparPorMes,agruparPorMetodoPago);
 
         return ResponseEntity.ok(reporte);
+    }
+
+    @GetMapping("/financiero/excel/periodo")
+    public ResponseEntity<byte[]> exportarPagosPorPeriodoExcel(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
+        try {
+            ReporteFinancieroDto reporte = reporteService.generarReporteFinanciero(fechaInicio, fechaFin, false,false);
+            byte[] excelBytes = excelExportService.exportPagosToExcel(reporte);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+            headers.setContentDispositionFormData("attachment", "pagos_periodo.xlsx");
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+            return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/inscripciones")

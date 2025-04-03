@@ -19,7 +19,7 @@ public class UsuarioInfoDto {
     private String apellido;
     private String dni;
     private String telefono;
-    private LocalDate fechaNacimiento;
+    private LocalDateTime fechaNacimiento;
     private Inscripcion.EstadoPago estado;
     private LocalDateTime fechaAlta;
 
@@ -30,7 +30,7 @@ public class UsuarioInfoDto {
         this.apellido = usuario.getApellido();
         this.dni = usuario.getDni();
         this.telefono = usuario.getTelefono();
-        this.fechaNacimiento = usuario.getFechaNacimiento();
+        this.fechaNacimiento = usuario.getFechaNacimiento().atStartOfDay();
         this.estado = usuario.obtenerEstado();
         this.fechaAlta = usuario.getFechaAlta();
     }

@@ -24,10 +24,10 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
             @Param("fechaInicio") LocalDate fechaInicio,
             @Param("fechaFin") LocalDate fechaFin);
 
-    @Query("SELECT p.metodoPago, COUNT(p) FROM Pago p " +
+    @Query("SELECT p.metodoPago, SUM(p.monto) FROM Pago p " +
             "WHERE p.fechaPago BETWEEN :fechaInicio AND :fechaFin " +
             "GROUP BY p.metodoPago")
-    List<Object[]> countPagosByMetodoPagoAndFechaPagoBetween(
+    List<Object[]> sumPagosByMetodoPagoAndFechaPagoBetween(
             @Param("fechaInicio") LocalDate fechaInicio,
             @Param("fechaFin") LocalDate fechaFin);
 

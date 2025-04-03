@@ -2,7 +2,9 @@ package com.veckos.VECKOS_Backend.controllers;
 
 import com.veckos.VECKOS_Backend.dtos.pago.PagoCrearDto;
 import com.veckos.VECKOS_Backend.dtos.pago.PagoInfoDto;
+import com.veckos.VECKOS_Backend.entities.Cuenta;
 import com.veckos.VECKOS_Backend.entities.Pago;
+import com.veckos.VECKOS_Backend.services.CuentaService;
 import com.veckos.VECKOS_Backend.services.InscripcionService;
 import com.veckos.VECKOS_Backend.services.PagoService;
 import jakarta.validation.Valid;
@@ -27,6 +29,9 @@ public class PagoController {
 
     @Autowired
     private InscripcionService inscripcionService;
+
+    @Autowired
+    private CuentaService cuentaService;
 
     @GetMapping
     public ResponseEntity<List<PagoInfoDto>> getAllPagos() {
@@ -75,6 +80,10 @@ public class PagoController {
         pago.setMonto(pagoDto.getMonto());
         pago.setFechaPago(pagoDto.getFechaPago() != null ? pagoDto.getFechaPago() : LocalDate.now());
         pago.setMetodoPago(pagoDto.getMetodoPago());
+        if(pago.getMetodoPago().equals(Pago.MetodoPago.TRANSFERENCIA)){
+            Cuenta cuenta = cuentaService.obtenerCuentaPorId(pagoDto.getCuentaId());
+            pago.setCuenta(cuenta);
+        }
         pago.setDescripcion(pagoDto.getDescripcion());
 
         // Registrar el pago
@@ -95,6 +104,12 @@ public class PagoController {
         pago.setMetodoPago(pagoDto.getMetodoPago());
         pago.setDescripcion(pagoDto.getDescripcion());
 
+        if(pago.getMetodoPago().equals(Pago.MetodoPago.TRANSFERENCIA)){
+            Cuenta cuenta = cuentaService.obtenerCuentaPorId(pagoDto.getCuentaId());
+            pago.setCuenta(cuenta);
+        }else{
+            pago.setCuenta(null);
+        }
         Pago updatedPago = pagoService.update(id, pago);
         PagoInfoDto response = new PagoInfoDto(updatedPago);
         return ResponseEntity.ok(response);

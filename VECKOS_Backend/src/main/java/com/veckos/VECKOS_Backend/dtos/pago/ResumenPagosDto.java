@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -16,8 +17,8 @@ import java.util.List;
 @AllArgsConstructor
 class ResumenPagosDto {
 
-    private LocalDate fechaInicio;
-    private LocalDate fechaFin;
+    private LocalDateTime fechaInicio;
+    private LocalDateTime fechaFin;
     private BigDecimal montoTotal;
     private Integer cantidadPagos;
     private List<ResumenPagoPorMetodoDto> pagosPorMetodo;

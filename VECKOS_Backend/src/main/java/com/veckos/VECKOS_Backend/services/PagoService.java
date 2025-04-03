@@ -118,7 +118,7 @@ public class PagoService {
 
     @Transactional(readOnly = true)
     public List<Object[]> countPagosByMetodoPagoAndFechaPagoBetween(LocalDate fechaInicio, LocalDate fechaFin) {
-        return pagoRepository.countPagosByMetodoPagoAndFechaPagoBetween(fechaInicio, fechaFin);
+        return pagoRepository.sumPagosByMetodoPagoAndFechaPagoBetween(fechaInicio, fechaFin);
     }
 
     @Transactional(readOnly = true)

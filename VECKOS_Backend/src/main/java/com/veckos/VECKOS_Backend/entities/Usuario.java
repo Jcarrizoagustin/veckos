@@ -45,19 +45,8 @@ public class Usuario {
     @Column(name = "fecha_alta", nullable = false)
     private LocalDateTime fechaAlta;
 
-    /*@Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private EstadoUsuario estado;*/
-
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Inscripcion> inscripciones = new ArrayList<>();
-
-    // Enum para el estado del usuario
-    /*public enum EstadoUsuario {
-        ACTIVO,
-        INACTIVO,
-        PENDIENTE
-    }*/
 
     // Métodos helper para relaciones bidireccionales
     public void addInscripcion(Inscripcion inscripcion) {

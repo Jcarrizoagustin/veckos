@@ -39,14 +39,25 @@ public interface AsistenciaRepository extends JpaRepository<Asistencia, Long> {
             @Param("fechaInicio") LocalDate fechaInicio,
             @Param("fechaFin") LocalDate fechaFin);
 
-    @Query("SELECT a.usuario.id as usuarioId, COUNT(a) as cantidadAsistencias " +
+    @Query("SELECT a.usuario.id as usuarioId, CONCAT( a.usuario.nombre, ' ',  a.usuario.apellido) as nombre, COUNT(a) as cantidadAsistencias " +
             "FROM Asistencia a " +
             "JOIN a.clase c " +
             "WHERE a.presente = true " +
             "AND c.fecha BETWEEN :fechaInicio AND :fechaFin " +
-            "GROUP BY a.usuario.id " +
+            "GROUP BY a.usuario.id, a.usuario.nombre, a.usuario.apellido " +
             "ORDER BY cantidadAsistencias DESC")
     List<Object[]> findUsuariosConMayorAsistenciaEnPeriodo(
+            @Param("fechaInicio") LocalDate fechaInicio,
+            @Param("fechaFin") LocalDate fechaFin);
+
+    @Query("SELECT c.fecha as fecha, COUNT(a) as cantidadAsistencias " +
+            "FROM Asistencia a " +
+            "JOIN a.clase c " +
+            "WHERE a.presente = true " +
+            "AND c.fecha BETWEEN :fechaInicio AND :fechaFin " +
+            "GROUP BY c.fecha " +
+            "ORDER BY cantidadAsistencias DESC")
+    List<Object[]> countAsistenciaByFechaEnPeriodo(
             @Param("fechaInicio") LocalDate fechaInicio,
             @Param("fechaFin") LocalDate fechaFin);
 }

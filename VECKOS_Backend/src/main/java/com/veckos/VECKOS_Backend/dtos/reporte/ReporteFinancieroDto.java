@@ -16,15 +16,15 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-class ReporteFinancieroDto {
+public class ReporteFinancieroDto {
 
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
     private BigDecimal ingresoTotal;
     private Integer cantidadPagos;
     private BigDecimal montoPromedio;
-    private Map<String, BigDecimal> ingresosPorMes;
-    private Map<String, BigDecimal> ingresosPorMetodoPago;
+    //private Map<String, BigDecimal> ingresosPorMes;
+    private List<Object[]> ingresosPorMetodoPago;
     private Map<String, BigDecimal> ingresosPorPlan;
     private List<PagoInfoDto> pagos;
 }

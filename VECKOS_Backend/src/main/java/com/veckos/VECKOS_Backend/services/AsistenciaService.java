@@ -121,4 +121,9 @@ public class AsistenciaService {
     public List<Object[]> findUsuariosConMayorAsistenciaEnPeriodo(LocalDate fechaInicio, LocalDate fechaFin) {
         return asistenciaRepository.findUsuariosConMayorAsistenciaEnPeriodo(fechaInicio, fechaFin);
     }
+
+    @Transactional(readOnly = true)
+    public List<Object[]> findCantidadAsistenciaByFechaEnPeriodo(LocalDate fechaInicio, LocalDate fechaFin) {
+        return asistenciaRepository.countAsistenciaByFechaEnPeriodo(fechaInicio, fechaFin);
+    }
 }

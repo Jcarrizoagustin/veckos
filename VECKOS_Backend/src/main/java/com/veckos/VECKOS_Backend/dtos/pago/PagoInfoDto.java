@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * DTO para mostrar información de un pago
@@ -22,8 +23,9 @@ public class PagoInfoDto {
     private String apellidoUsuario;
     private String nombrePlan;
     private BigDecimal monto;
-    private LocalDate fechaPago;
+    private LocalDateTime fechaPago;
     private Pago.MetodoPago metodoPago;
+    private String cuenta;
     private String descripcion;
 
     // Constructor para convertir desde entidad
@@ -34,8 +36,13 @@ public class PagoInfoDto {
         this.apellidoUsuario = pago.getInscripcion().getUsuario().getApellido();
         this.nombrePlan = pago.getInscripcion().getPlan().getNombre();
         this.monto = pago.getMonto();
-        this.fechaPago = pago.getFechaPago();
+        this.fechaPago = pago.getFechaPago().atStartOfDay();
         this.metodoPago = pago.getMetodoPago();
         this.descripcion = pago.getDescripcion();
+        if(pago.getMetodoPago().equals(Pago.MetodoPago.TRANSFERENCIA)){
+            this.cuenta = pago.getCuenta().getCbu() + " " + pago.getCuenta().getDescripcion();
+        }else{
+            this.cuenta = "";
+        }
     }
 }

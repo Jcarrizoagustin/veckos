@@ -30,5 +30,7 @@ public class PagoCrearDto {
     //@NotNull(message = "El método de pago es obligatorio")
     private Pago.MetodoPago metodoPago;
 
+    private Long cuentaId;
+
     private String descripcion;
 }

@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Data
@@ -22,11 +24,11 @@ public class InscripcionInfoDto {
     private String nombrePlan;
     private Long planId;
     private BigDecimal precioPlan;
-    private LocalDate fechaInicio;
-    private LocalDate fechaFin;
+    private LocalDateTime fechaInicio;
+    private LocalDateTime fechaFin;
     private Integer frecuencia;
     private Inscripcion.EstadoPago estadoPago;
-    private LocalDate ultimoPago;
+    private LocalDateTime ultimoPago;
     private List<DetalleInscripcionInfoDto> detalles;
 
     // Constructor para convertir desde entidad
@@ -37,12 +39,16 @@ public class InscripcionInfoDto {
         this.apellidoUsuario = inscripcion.getUsuario().getApellido();
         this.nombrePlan = inscripcion.getPlan().getNombre();
         this.planId = inscripcion.getPlan().getId();
-        this.fechaInicio = inscripcion.getFechaInicio();
-        this.fechaFin = inscripcion.getFechaFin();
+        this.fechaInicio = inscripcion.getFechaInicio().atStartOfDay();
+        this.fechaFin = inscripcion.getFechaFin().atStartOfDay();
         this.frecuencia = inscripcion.getFrecuencia();
         this.estadoPago = inscripcion.getEstadoPago();
-        this.ultimoPago = inscripcion.getUltimoPago();
+        //this.ultimoPago = inscripcion.getUltimoPago().atStartOfDay();
         this.precioPlan = inscripcion.getPlan().getPrecio();
+
+        if(Objects.nonNull(inscripcion.getUltimoPago())){
+            this.ultimoPago = inscripcion.getUltimoPago().atStartOfDay();
+        }
 
         if (inscripcion.getDetalles() != null) {
             this.detalles = inscripcion.getDetalles().stream()
