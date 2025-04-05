@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class ExcelExportService {
@@ -28,7 +30,7 @@ public class ExcelExportService {
 
             // Crear fila de encabezado
             Row headerRow = sheet.createRow(0);
-            String[] columns = {"Nombre Cliente", "Apellido Cliente", "Fecha de Pago", "Método de Pago", "Cuenta de Pago"};
+            String[] columns = {"Nombre Cliente", "Apellido Cliente", "DNI" ,"CUIL","Fecha de Pago", "Método de Pago", "Monto", "CBU Cuenta","Descripcion Cuenta"};
 
             for (int i = 0; i < columns.length; i++) {
                 Cell cell = headerRow.createCell(i);
@@ -38,13 +40,18 @@ public class ExcelExportService {
 
             // Llenar los datos
             int rowNum = 1;
+            NumberFormat formatoMoneda = NumberFormat.getCurrencyInstance(new Locale("es", "AR"));
             for (PagoInfoDto pago : reporte.getPagos()) {
                 Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(pago.getNombreUsuario());
                 row.createCell(1).setCellValue(pago.getApellidoUsuario());
-                row.createCell(2).setCellValue(pago.getFechaPago().toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-                row.createCell(3).setCellValue(pago.getMetodoPago().toString());
-                row.createCell(4).setCellValue(pago.getCuenta());
+                row.createCell(2).setCellValue(pago.getDniUsuario());
+                row.createCell(3).setCellValue(pago.getCuilUsuario());
+                row.createCell(4).setCellValue(pago.getFechaPago().toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                row.createCell(5).setCellValue(pago.getMetodoPago().toString());
+                row.createCell(6).setCellValue(formatoMoneda.format(pago.getMonto()));
+                row.createCell(7).setCellValue(pago.getCbuCuenta());
+                row.createCell(8).setCellValue(pago.getDescripcionCuenta());
             }
 
             // Ajustar ancho de columnas

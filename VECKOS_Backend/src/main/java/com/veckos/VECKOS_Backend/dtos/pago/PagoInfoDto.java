@@ -21,11 +21,14 @@ public class PagoInfoDto {
     private Long inscripcionId;
     private String nombreUsuario;
     private String apellidoUsuario;
+    private String dniUsuario;
+    private String cuilUsuario;
     private String nombrePlan;
     private BigDecimal monto;
     private LocalDateTime fechaPago;
     private Pago.MetodoPago metodoPago;
-    private String cuenta;
+    private String cbuCuenta;
+    private String descripcionCuenta;
     private String descripcion;
 
     // Constructor para convertir desde entidad
@@ -39,10 +42,14 @@ public class PagoInfoDto {
         this.fechaPago = pago.getFechaPago().atStartOfDay();
         this.metodoPago = pago.getMetodoPago();
         this.descripcion = pago.getDescripcion();
+        this.dniUsuario = pago.getInscripcion().getUsuario().getDni();
+        this.cuilUsuario = pago.getInscripcion().getUsuario().getCuil();
         if(pago.getMetodoPago().equals(Pago.MetodoPago.TRANSFERENCIA)){
-            this.cuenta = pago.getCuenta().getCbu() + " " + pago.getCuenta().getDescripcion();
+            this.cbuCuenta = pago.getCuenta().getCbu();
+            this.descripcionCuenta = pago.getCuenta().getDescripcion();
         }else{
-            this.cuenta = "";
+            this.cbuCuenta = "";
+            this.descripcionCuenta = "";
         }
     }
 }
