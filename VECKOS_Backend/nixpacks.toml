@@ -1,3 +1,5 @@
+[phases.setup]
+cmds = ["cd VECKOS_Backend"]
 
 [phases.build]
 cmds = ["./mvnw clean package -DskipTests"]
