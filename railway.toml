@@ -1,0 +1,3 @@
+[build]
+builder = "nixpacks"
+nixpacksConfigPath = "VECKOS_Backend/nixpacks.toml"
