@@ -46,6 +46,10 @@ public class PagoService {
     public Pago registrarPago(Long inscripcionId, Pago pago) {
         Inscripcion inscripcion = inscripcionService.findById(inscripcionId);
         pago.setInscripcion(inscripcion);
+        //inscripcionService.cambiarEstadoInscripcionAEnCurso(inscripcion, Inscripcion.EstadoInscripcion.EN_CURSO);
+        if(inscripcionService.verificarInscripcionEstaEnCurso(inscripcion)){
+            inscripcion.setEstadoInscripcion(Inscripcion.EstadoInscripcion.EN_CURSO);
+        }
 
         // Si no se especifica la fecha de pago, usar la fecha actual
         if (pago.getFechaPago() == null) {
@@ -56,7 +60,7 @@ public class PagoService {
         Pago pagoPersistido = pagoRepository.save(pago);
 
         // Actualizar la inscripción
-        inscripcion.setEstadoPago(Inscripcion.EstadoPago.ACTIVO);
+        inscripcion.setEstadoPago(Inscripcion.EstadoPago.PAGA);
         inscripcion.setUltimoPago(pago.getFechaPago());
         inscripcionService.update(inscripcionId, inscripcion);
 
@@ -86,7 +90,7 @@ public class PagoService {
 
         // Si este es el único pago, cambiar el estado
         if (pagosDeLaInscripcion.size() <= 1) {
-            inscripcion.setEstadoPago(Inscripcion.EstadoPago.INACTIVO);
+            inscripcion.setEstadoPago(Inscripcion.EstadoPago.PENDIENTE);
             inscripcion.setUltimoPago(null);
             inscripcionService.update(inscripcion.getId(), inscripcion);
         }

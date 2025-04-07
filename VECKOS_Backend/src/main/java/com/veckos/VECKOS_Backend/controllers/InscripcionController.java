@@ -2,10 +2,7 @@ package com.veckos.VECKOS_Backend.controllers;
 
 import com.veckos.VECKOS_Backend.dtos.inscripcion.InscripcionCrearDto;
 import com.veckos.VECKOS_Backend.dtos.inscripcion.InscripcionInfoDto;
-import com.veckos.VECKOS_Backend.entities.DetalleInscripcion;
-import com.veckos.VECKOS_Backend.entities.Inscripcion;
-import com.veckos.VECKOS_Backend.entities.Plan;
-import com.veckos.VECKOS_Backend.entities.Usuario;
+import com.veckos.VECKOS_Backend.entities.*;
 import com.veckos.VECKOS_Backend.services.InscripcionService;
 import com.veckos.VECKOS_Backend.services.PlanService;
 import com.veckos.VECKOS_Backend.services.TurnoService;
@@ -14,14 +11,12 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/inscripciones")
@@ -86,7 +81,6 @@ public class InscripcionController {
     }
 
     @PostMapping
-    //@PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<InscripcionInfoDto> createInscripcion(@Valid @RequestBody InscripcionCrearDto inscripcionDto) {
         try {
             // Convertir DTO a entidad
@@ -111,13 +105,15 @@ public class InscripcionController {
 
             // Establecer estado de pago inicial
             inscripcion.setEstadoPago(Inscripcion.EstadoPago.PENDIENTE);
+            inscripcion.setEstadoInscripcion(Inscripcion.EstadoInscripcion.EN_CURSO);
 
             // Crear detalles de inscripción
             Set<DetalleInscripcion> detalles = new HashSet<>();
             inscripcionDto.getDetalles().forEach(detalleDto -> {
+                Turno turno = turnoService.findById(detalleDto.getTurnoId());
                 DetalleInscripcion detalle = new DetalleInscripcion();
-                detalle.setTurno(turnoService.findById(detalleDto.getTurnoId()));
-                detalle.setDiaSemana(detalleDto.getDiaSemana());
+                detalle.setTurno(turno);
+                detalle.setDiaSemana(turno.getDiaSemana());
                 detalles.add(detalle);
             });
 
@@ -150,7 +146,8 @@ public class InscripcionController {
     public ResponseEntity<?> renovarInscripcion(@PathVariable Long id) {
         try {
             Inscripcion inscripcionRenovada = inscripcionService.renovarInscripcion(id);
-            return ResponseEntity.ok(inscripcionRenovada);
+            InscripcionInfoDto response = new InscripcionInfoDto(inscripcionRenovada);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -185,7 +182,7 @@ public class InscripcionController {
             nuevaInscripcion.setFrecuencia(inscripcionDto.getFrecuencia());
 
             // Establecer estado de pago inicial
-            nuevaInscripcion.setEstadoPago(Inscripcion.EstadoPago.ACTIVO);
+            nuevaInscripcion.setEstadoPago(Inscripcion.EstadoPago.PENDIENTE);
 
             // Crear detalles de inscripción
             Set<DetalleInscripcion> detalles = new HashSet<>();
@@ -205,6 +202,12 @@ public class InscripcionController {
                     .status(HttpStatus.BAD_REQUEST)
                     .body(e.getMessage());
         }
+    }
+
+    @PostMapping("/{id}/completar")
+    public ResponseEntity<Void> completarInscripcionTesting(@PathVariable Long id){
+        this.inscripcionService.completarInscripcion(id);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")

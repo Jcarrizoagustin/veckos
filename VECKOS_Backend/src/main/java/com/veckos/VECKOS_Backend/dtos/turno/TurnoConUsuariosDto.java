@@ -1,6 +1,7 @@
 package com.veckos.VECKOS_Backend.dtos.turno;
 
 import com.veckos.VECKOS_Backend.dtos.usuario.UsuarioInfoDto;
+import com.veckos.VECKOS_Backend.entities.Inscripcion;
 import com.veckos.VECKOS_Backend.entities.Turno;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,7 +35,9 @@ public class TurnoConUsuariosDto {
 
     private List<UsuarioInfoDto> obtenerUsuarios(Turno turno){
         List<UsuarioInfoDto> response = turno.getDetallesInscripcion()
-                .stream().map(detalle -> new UsuarioInfoDto(detalle.getInscripcion().getUsuario())).toList();
+                .stream()
+                .filter(detalleInscripcion -> detalleInscripcion.getInscripcion().getEstadoInscripcion().equals(Inscripcion.EstadoInscripcion.EN_CURSO))
+                .map(detalle -> new UsuarioInfoDto(detalle.getInscripcion().getUsuario())).toList();
         return response;
     }
 }

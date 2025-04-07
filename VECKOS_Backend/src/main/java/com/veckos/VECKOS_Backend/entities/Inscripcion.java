@@ -41,6 +41,10 @@ public class Inscripcion {
     @Column(name = "estado_pago", nullable = false)
     private EstadoPago estadoPago;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado_inscripcion", nullable = false)
+    private EstadoInscripcion estadoInscripcion;
+
     @Column(name = "ultimo_pago")
     private LocalDate ultimoPago;
 
@@ -52,10 +56,13 @@ public class Inscripcion {
 
     // Enum para el estado del pago
     public enum EstadoPago {
-        ACTIVO,              // Verde
-        INACTIVO,            // Rojo
-        PROXIMO_A_VENCER,    // Amarillo
-        PENDIENTE            // Azul
+        PAGA,              // Verde
+        PENDIENTE// Azul
+    }
+
+    public enum EstadoInscripcion {// Verde
+        EN_CURSO,            // Rojo
+        COMPLETADA           // Azul
     }
 
     // Métodos helper para relaciones bidireccionales

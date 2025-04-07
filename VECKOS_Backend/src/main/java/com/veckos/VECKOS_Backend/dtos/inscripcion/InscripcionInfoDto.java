@@ -30,6 +30,7 @@ public class InscripcionInfoDto {
     private Inscripcion.EstadoPago estadoPago;
     private LocalDateTime ultimoPago;
     private List<DetalleInscripcionInfoDto> detalles;
+    private Inscripcion.EstadoInscripcion estadoInscripcion;
 
     // Constructor para convertir desde entidad
     public InscripcionInfoDto(Inscripcion inscripcion) {
@@ -45,6 +46,7 @@ public class InscripcionInfoDto {
         this.estadoPago = inscripcion.getEstadoPago();
         //this.ultimoPago = inscripcion.getUltimoPago().atStartOfDay();
         this.precioPlan = inscripcion.getPlan().getPrecio();
+        this.estadoInscripcion = inscripcion.getEstadoInscripcion();
 
         if(Objects.nonNull(inscripcion.getUltimoPago())){
             this.ultimoPago = inscripcion.getUltimoPago().atStartOfDay();

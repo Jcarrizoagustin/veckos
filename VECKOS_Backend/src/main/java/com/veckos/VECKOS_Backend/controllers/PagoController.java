@@ -3,6 +3,7 @@ package com.veckos.VECKOS_Backend.controllers;
 import com.veckos.VECKOS_Backend.dtos.pago.PagoCrearDto;
 import com.veckos.VECKOS_Backend.dtos.pago.PagoInfoDto;
 import com.veckos.VECKOS_Backend.entities.Cuenta;
+import com.veckos.VECKOS_Backend.entities.Inscripcion;
 import com.veckos.VECKOS_Backend.entities.Pago;
 import com.veckos.VECKOS_Backend.services.CuentaService;
 import com.veckos.VECKOS_Backend.services.InscripcionService;

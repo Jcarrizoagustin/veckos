@@ -139,11 +139,19 @@ public class ClaseService {
 
     @Transactional(readOnly = true)
     public List<Clase> findClasesWithAsistenciaByUsuarioIdAndFechaBetween(Long usuarioId, LocalDate fechaInicio, LocalDate fechaFin) {
-        return claseRepository.findClasesWithAsistenciaByUsuarioIdAndFechaBetween(usuarioId, fechaInicio, fechaFin);
+        List<Clase> clases = claseRepository.findClasesWithAsistenciaByUsuarioIdAndFechaBetween(usuarioId, fechaInicio, fechaFin);
+        return clases;
     }
 
     @Transactional(readOnly = true)
     public Long countAsistenciasTotalesEnPeriodo(LocalDate fechaInicio, LocalDate fechaFin) {
         return claseRepository.countAsistenciasTotalesEnPeriodo(fechaInicio, fechaFin);
     }
+
+    /*public List<Clase> buscarClasesParaFecha(LocalDate fecha) {
+        List<Turno> turnos = claseRepository.findByFechaOrderByHora(fecha)
+                .stream().map(clase -> clase.getTurno()).toList();
+
+        return new ArrayList<>();
+    }*/
 }

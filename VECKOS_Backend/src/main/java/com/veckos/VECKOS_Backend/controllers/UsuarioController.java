@@ -3,6 +3,8 @@ package com.veckos.VECKOS_Backend.controllers;
 import com.veckos.VECKOS_Backend.dtos.inscripcion.InscripcionInfoDto;
 import com.veckos.VECKOS_Backend.dtos.usuario.UsuarioDetalleDto;
 import com.veckos.VECKOS_Backend.dtos.usuario.UsuarioDto;
+import com.veckos.VECKOS_Backend.dtos.usuario.UsuarioListItemDto;
+import com.veckos.VECKOS_Backend.entities.Inscripcion;
 import com.veckos.VECKOS_Backend.entities.Usuario;
 import com.veckos.VECKOS_Backend.services.UsuarioService;
 import jakarta.validation.Valid;
@@ -13,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -24,10 +27,10 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @GetMapping
-    public ResponseEntity<List<UsuarioDto>> getAllUsuarios() {
+    public ResponseEntity<List<UsuarioListItemDto>> getAllUsuarios() {
         List<Usuario> usuarios = usuarioService.findAll();
-        List<UsuarioDto> usuariosDto = usuarios.stream()
-                .map(this::convertToDto)
+        List<UsuarioListItemDto> usuariosDto = usuarios.stream()
+                .map(UsuarioListItemDto::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(usuariosDto);
     }
@@ -54,9 +57,17 @@ public class UsuarioController {
     public ResponseEntity<UsuarioDetalleDto> getUsuarioById(@PathVariable Long id) {
         Usuario usuario = usuarioService.findById(id);
         if(usuario.getInscripciones().size() > 0){
-            InscripcionInfoDto inscripcionInfoDto = new InscripcionInfoDto(usuario.getInscripciones().get(0));
-            UsuarioDetalleDto response = new UsuarioDetalleDto(usuario,inscripcionInfoDto);
-            return ResponseEntity.ok(response);
+            Inscripcion inscripcion = usuario.obtenerInscripcionActiva();
+            if(Objects.nonNull(inscripcion)){
+                InscripcionInfoDto inscripcionInfoDto = new InscripcionInfoDto(inscripcion);
+                UsuarioDetalleDto response = new UsuarioDetalleDto(usuario,inscripcionInfoDto);
+                return ResponseEntity.ok(response);
+            }else{
+                inscripcion =usuario.getInscripciones().get(usuario.getInscripciones().size() - 1);
+                InscripcionInfoDto inscripcionInfoDto = new InscripcionInfoDto(inscripcion);
+                UsuarioDetalleDto response = new UsuarioDetalleDto(usuario,inscripcionInfoDto);
+                return ResponseEntity.ok(response);
+            }
         }else{
             UsuarioDetalleDto response = new UsuarioDetalleDto(usuario,null);
             return ResponseEntity.ok(response);

@@ -50,6 +50,9 @@ public class ReporteController {
     @Autowired
     private ExcelExportService excelExportService;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
     @PostMapping("/asistencia")
     public ResponseEntity<?> generarReporteAsistencia(@RequestBody ReporteAsistenciaRequestDto requestDto) {
         if(requestDto.getUsuarioId()!=null){
@@ -135,11 +138,11 @@ public class ReporteController {
         LocalDate finMesAnterior = inicioMes.minusDays(1);
 
         // Contar usuarios activos
-        long usuariosActivos = inscripcionService.findByEstadoPago(Inscripcion.EstadoPago.ACTIVO).size();
+        long usuariosActivos = usuarioService.cantidadUsuariosActivos();
         stats.put("usuariosActivos", usuariosActivos);
 
         // Contar usuarios próximos a vencer
-        long usuariosProximosAVencer = inscripcionService.findByEstadoPago(Inscripcion.EstadoPago.PROXIMO_A_VENCER).size();
+        long usuariosProximosAVencer = inscripcionService.cantidadInscripcionesProximasAVencer();
         stats.put("usuariosProximosAVencer", usuariosProximosAVencer);
 
         // Calcular ingresos
